@@ -1,0 +1,23 @@
+.navbar {
+    padding-left: 8rem;
+    padding-right: 8rem;
+}
+
+@media only screen and (max-width: 1000px) {
+  .navbar {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.navbar-brand a{
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-nav a {
+    text-decoration: none;
+    color: white;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}

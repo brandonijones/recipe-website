@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import NavigationBar from './components/NavigationBar';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Login from './pages/Login';
@@ -9,12 +9,13 @@ import PageNotFound from './pages/PageNotFound';
 
 /* Import styling */
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/Navbar.css';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Navbar />} >
+        <Route path='/' element={<NavigationBar />} >
           <Route index element={<Home />} />
           <Route path='/search' element={<Search />} />
           <Route path='/login' element={<Login />} />
