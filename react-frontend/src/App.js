@@ -10,6 +10,7 @@ import PageNotFound from './pages/PageNotFound';
 /* Import styling */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Navbar.css';
+import ConfirmEmail from './pages/ConfimEmail';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path='/search' element={<Search />} />
           <Route path='/login' element={<Login />} />
           <Route path='/registration' element={<Registration />} />
+          <Route path='/register-success' element={<ConfirmEmail />} />
           <Route path='*' element={<PageNotFound />} />
         </Route>
       </Routes>

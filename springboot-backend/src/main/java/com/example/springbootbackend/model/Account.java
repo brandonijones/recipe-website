@@ -1,6 +1,8 @@
 package com.example.springbootbackend.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "accounts")
@@ -33,6 +35,15 @@ public class Account {
 
     @Column(name = "profile_picture")
     private String profilePicture;
+
+    private boolean locked = false;
+    private boolean enabled = false;
+
+    @Column(name = "verification_code", length = 64)
+    private String verificationCode;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     // Default constructor
     public Account() {}
@@ -68,6 +79,10 @@ public class Account {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     public String getEmail() {
@@ -116,5 +131,37 @@ public class Account {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

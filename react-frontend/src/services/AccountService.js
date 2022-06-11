@@ -15,6 +15,10 @@ class AccountService {
     createAccount(account) {
         return axios.post(ACCOUNT_API_BASE_URL + "/create-account", account);
     }
+
+    register(account) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/registration", account);
+    }
 }
 
 export default new AccountService();
