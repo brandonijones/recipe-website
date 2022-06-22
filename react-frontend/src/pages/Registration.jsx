@@ -23,7 +23,7 @@ function Registration() {
     const validationSchema = Yup.object().shape({
         firstName: Yup.string().min(2, 'Too Short!').max(20, "Too Long!").required("First name is required."),
         lastName: Yup.string().min(2, 'Too Short!').max(20, "Too Long!").required("Last name is required."),
-        email: Yup.string().email("Please enter a valid email.").required("Email is required."),
+        email: Yup.string().email("Please enter a valid email address.").required("Email is required."),
         emailConfirmation: Yup.string().oneOf([Yup.ref("email"), null], "Email does not match!").required("Please confirm your email address."),
         username: Yup.string().min(3, 'Too Short!').max(50, "Too Long!").required("Username is required."),
         password: Yup.string().min(6, 'Must be at least 6 characters long').required("Please provide a password."),

@@ -3,6 +3,8 @@ package com.example.springbootbackend.service;
 import com.example.springbootbackend.model.Account;
 import com.example.springbootbackend.repository.AccountRepository;
 import com.example.springbootbackend.security.PasswordEncoder;
+import com.example.springbootbackend.verification.ResendRequest;
+import com.example.springbootbackend.verification.ResendResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -38,7 +40,7 @@ public class RegistrationService {
         account.setCreatedAt(LocalDateTime.now());
 
         // Creating a random verification code
-        String randomCode = RandomString.make(64);
+        String randomCode = generateVerificationCode();
         account.setVerificationCode(randomCode);
 
         account.setEnabled(false);
@@ -46,24 +48,70 @@ public class RegistrationService {
         return accountRepository.save(account);
     }
 
-    public void sendVerificationEmail(Account account, String siteURL) throws MessagingException, UnsupportedEncodingException {
+    public ResendResponse resendEmail(ResendRequest request) {
+        ResendResponse response = new ResendResponse();
+        Account account = accountRepository.findByEmail(request.getEmail());
+
+        // Account was not found with the given email
+        if (account == null) {
+            response.setError(true);
+            response.setMessage("Email is not associated with an account.");
+            response.setEmail(request.getEmail());
+            return response;
+        }
+
+        // Account is already activated
+        if (account.isEnabled()) {
+            response.setError(true);
+            response.setMessage("Account is already activated. No need to send another verification email.");
+            response.setEmail(request.getEmail());
+            return response;
+        }
+
+        // New verification email sent
+        String randomCode = generateVerificationCode();
+        account.setVerificationCode(randomCode);
+        account.setEnabled(false);
+
+        // Send email
+        try {
+            sendVerificationEmail(account);
+            response.setError(false);
+            response.setMessage("New verification email has been sent.");
+            response.setEmail(request.getEmail());
+            return response;
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        // Generate response
+        response.setError(true);
+        response.setMessage("Email could not be sent.");
+        response.setEmail(request.getEmail());
+        return response;
+    }
+
+    private String generateVerificationCode() {
+        return RandomString.make(64);
+    }
+
+    public void sendVerificationEmail(Account account) throws MessagingException, UnsupportedEncodingException {
         String subject = "Activate your account";
         String senderName = "Recipe Website";
-        String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
-        mailContent += "<p>Please click the link below to verify your email and activate your account./p>";
 
 //        String verifyURL = siteURL + "/verify?code=" + account.getVerificationCode();
         String verifyURL = "http://localhost:3000/verify/" + account.getVerificationCode();
 
-        System.out.println(verifyURL);
-
+        // Mail content
+        String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
+        mailContent += "<p>Please click the link below to verify your email and activate your account.</p>";
         mailContent += "<a href=" + verifyURL + ">VERIFY</a>";
         mailContent += "<p>Thank you, <br> The Recipe Website Team";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        // TODO: make custom email for this website
+        // TODO make custom email for this website
         helper.setFrom("brandonijones@outlook.com", senderName);
         helper.setTo(account.getEmail());
         helper.setSubject(subject);

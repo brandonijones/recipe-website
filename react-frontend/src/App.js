@@ -8,6 +8,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Registration from './pages/Registration';
 import ConfirmEmail from './pages/ConfimEmail';
+import ResendEmail from './pages/ResendEmail';
 import EmailVerification from './pages/EmailVerification';
 import PageNotFound from './pages/PageNotFound';
 
@@ -70,6 +71,7 @@ function App() {
             <Route path='/reset-password/:code' element={ <ResetPassword /> } />
             <Route path='/registration' element={<Registration />} />
             <Route path='/registration-success' element={<ConfirmEmail />} />
+            <Route path='/resend-email' element={<ResendEmail />} />
             <Route path='/verify/:code' element={<EmailVerification />} />
             <Route path='*' element={<PageNotFound />} />
           </Route>

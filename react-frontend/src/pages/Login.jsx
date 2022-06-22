@@ -67,23 +67,16 @@ function Login() {
                             <label className='form-label'>Email or Username:</label>
                             <Field name="user" className="form-control" placeholder='Enter your email or username...'/>
                             {errors.user && touched.user && <div className='text-danger'>{errors.user}</div>}
-                            {/* {!errors.user && touched.user && <div className='text-success'>Email or username is valid!</div>} */}
                         </div>
                         <div className='mb-4'>
                             <label className='form-label'>Password:</label>
                             <Field name="password" type="password" className="form-control" placeholder='Enter your password...' />
                             {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
-                            {/* {!errors.password && touched.password && <div className='text-success'>Password is valid!</div>} */}
                         </div>
-                        <div className='container '>
-                            <div className='row'>
-                                <div className='col-sm-12 col-md-7'>
-                                    <p>Need to create an account? <a href="/registration">Sign Up</a></p>
-                                </div>
-                                <div className='col-sm-12 col-md-5'>
-                                    <p> <a href="/">Forgot password?</a> </p>
-                                </div>
-                            </div>
+                        <div className='container'>
+                            <p>Need to create an account? <a href="/registration">Sign up</a></p>
+                            <p>Need a new email verification link? <a href="/resend-email">Send now</a> </p>
+                            <p> <a href="/forgot-password">Forgot password?</a> </p>
                         </div>
                         <button type="submit" className="btn btn-primary my-3">Log In</button>
                     </Form>

@@ -8,6 +8,8 @@ import com.example.springbootbackend.model.Account;
 import com.example.springbootbackend.repository.AccountRepository;
 import com.example.springbootbackend.service.AccountServices;
 import com.example.springbootbackend.service.RegistrationService;
+import com.example.springbootbackend.verification.ResendRequest;
+import com.example.springbootbackend.verification.ResendResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
@@ -81,8 +83,13 @@ public class AccountController {
 //        System.out.println(siteURL);
 
         registrationService.register(account);
-        registrationService.sendVerificationEmail(account, siteURL);
+        registrationService.sendVerificationEmail(account);
         return "registration success";
+    }
+
+    @PostMapping("/resend-email")
+    public ResendResponse resendVerificationEmail(@RequestBody ResendRequest request) {
+        return registrationService.resendEmail(request);
     }
 
     @GetMapping("/verify")
@@ -103,23 +110,6 @@ public class AccountController {
     public AuthResponse login(@RequestBody AuthRequest request) {
         return accountServices.login(request);
     }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody AuthRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException {
-//
-//        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                request.getUser(), request.getPassword()));
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        Account account = (Account) authentication.getPrincipal();
-//        String jwtToken = jwtTokenUtil.generateAccessToken(account);
-//
-//        AuthResponse response = new AuthResponse();
-//        response.setAccessToken(jwtToken);
-//
-//        return ResponseEntity.ok(response);
-//    }
 
     @GetMapping("/auth/validation")
     public AuthResponse validation(@RequestHeader("authorization") String header) {

@@ -20,6 +20,10 @@ class AccountService {
         return axios.get(`${ACCOUNT_API_BASE_URL}/verify?code=${verificationCode}`);
     }
 
+    resendEmail(email) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/resend-email", email);
+    }
+
     login(formData) {
         return axios.post(ACCOUNT_API_BASE_URL + "/auth/login", formData);
     }
