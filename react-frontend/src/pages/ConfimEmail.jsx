@@ -3,9 +3,9 @@ import React from 'react';
 function ConfirmEmail() {
 
     return (
-        <div>
+        <div className='text-center m-4'>
             <h3>Registration Successful!</h3>
-            <p>Please check your email to verify your account.</p>
+            <p>Please check your email to activate your account.</p>
         </div>
     );
 }

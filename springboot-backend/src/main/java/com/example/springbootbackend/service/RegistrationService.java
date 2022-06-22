@@ -29,27 +29,31 @@ public class RegistrationService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public Account register(Account account, String siteURL) throws UnsupportedEncodingException, MessagingException {
+    public Account register(Account account) throws UnsupportedEncodingException, MessagingException {
 
+        // Encoding the password for the database
         String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
         account.setPassword(encodedPassword);
 
         account.setCreatedAt(LocalDateTime.now());
 
+        // Creating a random verification code
         String randomCode = RandomString.make(64);
         account.setVerificationCode(randomCode);
+
         account.setEnabled(false);
 
         return accountRepository.save(account);
     }
 
     public void sendVerificationEmail(Account account, String siteURL) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Please verify your email";
+        String subject = "Activate your account";
         String senderName = "Recipe Website";
         String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
-        mailContent += "<p>Please click the link below to verify your registration</p>";
+        mailContent += "<p>Please click the link below to verify your email and activate your account./p>";
 
-        String verifyURL = siteURL + "/verify?code=" + account.getVerificationCode();
+//        String verifyURL = siteURL + "/verify?code=" + account.getVerificationCode();
+        String verifyURL = "http://localhost:3000/verify/" + account.getVerificationCode();
 
         System.out.println(verifyURL);
 
@@ -59,6 +63,7 @@ public class RegistrationService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
+        // TODO: make custom email for this website
         helper.setFrom("brandonijones@outlook.com", senderName);
         helper.setTo(account.getEmail());
         helper.setSubject(subject);

@@ -12,12 +12,22 @@ class AccountService {
         return axios.post(ACCOUNT_API_BASE_URL + "/find-email", email);
     }
 
-    createAccount(account) {
-        return axios.post(ACCOUNT_API_BASE_URL + "/create-account", account);
-    }
-
     register(account) {
         return axios.post(ACCOUNT_API_BASE_URL + "/registration", account);
+    }
+
+    verify(verificationCode) {
+        return axios.get(`${ACCOUNT_API_BASE_URL}/verify?code=${verificationCode}`);
+    }
+
+    login(formData) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/auth/login", formData);
+    }
+
+    validate() {
+        return axios.get(ACCOUNT_API_BASE_URL + "/auth/validation", { headers: {
+            authorization: 'bearer ' + localStorage.getItem("accessToken")
+        }});
     }
 }
 

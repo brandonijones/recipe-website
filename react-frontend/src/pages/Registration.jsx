@@ -26,7 +26,7 @@ function Registration() {
         email: Yup.string().email("Please enter a valid email.").required("Email is required."),
         emailConfirmation: Yup.string().oneOf([Yup.ref("email"), null], "Email does not match!").required("Please confirm your email address."),
         username: Yup.string().min(3, 'Too Short!').max(50, "Too Long!").required("Username is required."),
-        password: Yup.string().min(8, 'Must be at least 8 characters long').required("Please provide a password."),
+        password: Yup.string().min(6, 'Must be at least 6 characters long').required("Please provide a password."),
         passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], "Passwords do not match!").required("Please confirm your password.")
     });
 
@@ -70,10 +70,10 @@ function Registration() {
         const newAccount = {...data, role: "USER"}
 
         /* A successful registration will take you to the home page */
-        AccountService.register(newAccount).then(() => {
-            // console.log(data);
+        AccountService.register(newAccount).then((response) => {
+            // console.log(response.data);
         });
-        navigate("/register-success");
+        navigate("/registration-success");
     }
 
     return (
@@ -118,7 +118,7 @@ function Registration() {
                         </div>
                         <div className='mb-1'>
                             <label className='form-label'>Create a password</label>
-                            <Field name="password" type="password" className="form-control" placeholder='Must be at least 8 characters...' />
+                            <Field name="password" type="password" className="form-control" placeholder='Must be at least 6 characters...' />
                             {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
                             {!errors.password && touched.password && <div className='text-success'>Password is valid!</div>}
                         </div>
