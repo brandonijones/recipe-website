@@ -55,7 +55,7 @@ public class RegistrationService {
         // Account was not found with the given email
         if (account == null) {
             response.setError(true);
-            response.setMessage("Email is not associated with an account.");
+            response.setMessage("Email cannot be found in our records.");
             response.setEmail(request.getEmail());
             return response;
         }
@@ -77,14 +77,14 @@ public class RegistrationService {
         try {
             sendVerificationEmail(account);
             response.setError(false);
-            response.setMessage("New verification email has been sent.");
+            response.setMessage("New verification email has been sent!");
             response.setEmail(request.getEmail());
             return response;
         } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        // Generate response
+        // If there's an error sending the email
         response.setError(true);
         response.setMessage("Email could not be sent.");
         response.setEmail(request.getEmail());
@@ -129,7 +129,6 @@ public class RegistrationService {
             account.setVerificationCode(null);
             account.setEnabled(true);
             accountRepository.save(account);
-
             return true;
         }
 

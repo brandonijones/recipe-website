@@ -21,3 +21,22 @@
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
+
+.dropdown-content {
+  position: absolute;
+  background-color: #f1f1f1;
+  overflow: auto;
+  min-width: 8rem;
+  right: 0;
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  display: block;
+}
+
+.profile-icon {
+  color: white;
+  cursor: pointer;
+}

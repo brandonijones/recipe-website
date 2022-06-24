@@ -10,6 +10,7 @@ function Registration() {
     const navigate = useNavigate();
     const [usernameTaken, setUsernameTaken] = useState(false);
     const [emailTaken, setEmailTaken] = useState(false);
+    const [isSending, setIsSending] = useState(false);
 
     const initialValues = {
         firstName: "",
@@ -21,11 +22,11 @@ function Registration() {
     }
 
     const validationSchema = Yup.object().shape({
-        firstName: Yup.string().min(2, 'Too Short!').max(20, "Too Long!").required("First name is required."),
-        lastName: Yup.string().min(2, 'Too Short!').max(20, "Too Long!").required("Last name is required."),
+        firstName: Yup.string().min(1, 'Too Short!').max(20, "Too Long!").required("First name is required."),
+        lastName: Yup.string().min(1, 'Too Short!').max(20, "Too Long!").required("Last name is required."),
         email: Yup.string().email("Please enter a valid email address.").required("Email is required."),
         emailConfirmation: Yup.string().oneOf([Yup.ref("email"), null], "Email does not match!").required("Please confirm your email address."),
-        username: Yup.string().min(3, 'Too Short!').max(50, "Too Long!").required("Username is required."),
+        username: Yup.string().max(30, "Too Long!").required("Username is required."),
         password: Yup.string().min(6, 'Must be at least 6 characters long').required("Please provide a password."),
         passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], "Passwords do not match!").required("Please confirm your password.")
     });
@@ -68,10 +69,12 @@ function Registration() {
 
     const registerUser = (data) => {
         const newAccount = {...data, role: "USER"}
+        setIsSending(true);
 
         /* A successful registration will take you to the home page */
         AccountService.register(newAccount).then((response) => {
             // console.log(response.data);
+            setIsSending(false);
         });
         navigate("/registration-success");
     }
@@ -129,7 +132,11 @@ function Registration() {
                             {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches!</div>}
                         </div>
                         <p>Already have an account? <a href="/login">Log in</a></p>
-                        <button type="submit" className="btn btn-primary my-3">Register</button>
+                        <div>
+                            <button type="submit" className="btn btn-primary my-3">Register</button>
+                            { isSending && <span>loading...</span> }
+                        </div>
+                        
                     </Form>
                 )}
             </Formik>

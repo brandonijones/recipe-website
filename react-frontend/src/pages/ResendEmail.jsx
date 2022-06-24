@@ -9,11 +9,16 @@ function ResendEmail() {
     const [message, setMessage] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     
     const sendEmail = (email) => {
+        setIsSending(true);
 
         AccountService.resendEmail(email).then((response) => {
             console.log(response.data);
+
+            setIsSending(false);
+
             if (response.data.error) {
                 setMessage(response.data.message);
                 setShowError(true);
@@ -59,7 +64,10 @@ function ResendEmail() {
                             {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
                             {!errors.emailConfirmation && touched.emailConfirmation && <div className='text-success'>Email matches!</div>}
                         </div>
-                        <button type="submit" className="btn btn-primary my-3">Send email</button>
+                        <div>
+                            <button type="submit" className="btn btn-primary my-3">Send email</button>
+                            { isSending && <span>loading...</span> }
+                        </div>
                     </Form>
                 )}
             </Formik>

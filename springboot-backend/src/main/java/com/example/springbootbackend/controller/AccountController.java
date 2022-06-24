@@ -1,8 +1,6 @@
 package com.example.springbootbackend.controller;
 
-import com.example.springbootbackend.auth.AccountInfo;
-import com.example.springbootbackend.auth.AuthRequest;
-import com.example.springbootbackend.auth.AuthResponse;
+import com.example.springbootbackend.auth.*;
 import com.example.springbootbackend.jwt.JwtTokenUtil;
 import com.example.springbootbackend.model.Account;
 import com.example.springbootbackend.repository.AccountRepository;
@@ -133,4 +131,18 @@ public class AccountController {
         return response;
     }
 
+    @PostMapping("/forgot-password")
+    public ForgotPasswordResponse forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        return accountServices.forgotPassword(request);
+    }
+
+    @GetMapping("/reset-password")
+    public boolean authorizeReset(@Param("code") String code) {
+        return accountServices.verifyReset(code);
+    }
+
+    @PostMapping("/change-password")
+    public ChangePasswordResponse changePassword(@RequestBody ChangePasswordRequest request) {
+        return accountServices.changePassword(request);
+    }
 }

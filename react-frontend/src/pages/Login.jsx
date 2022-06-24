@@ -13,6 +13,7 @@ function Login() {
     const [show, setShow] = useState(false);
     const [loginError, setLoginError] = useState("");
     const { setAuthState } = useContext(AuthContext);
+    const [isSending, setIsSending] = useState(false);
 
     const initialValues = {
         user: "",
@@ -23,8 +24,10 @@ function Login() {
         console.log(data);
 
         setShow(false);
+        setIsSending(true);
         AccountService.login(data).then((response) => {
             console.log(response.data);
+            setIsSending(false);
 
             if (response.data.error) {
                 setLoginError(response.data.message);
@@ -42,6 +45,7 @@ function Login() {
                     lastName: user.lastName,
                     role: user.role
                 });
+                navigate("/");
             }
             
         });
@@ -78,10 +82,12 @@ function Login() {
                             <p>Need a new email verification link? <a href="/resend-email">Send now</a> </p>
                             <p> <a href="/forgot-password">Forgot password?</a> </p>
                         </div>
-                        <button type="submit" className="btn btn-primary my-3">Log In</button>
+                        <div>
+                            <button type="submit" className="btn btn-primary my-3">Log In</button>
+                            { isSending && <span>loading...</span> }
+                        </div>
                     </Form>
                 )}
-
             </Formik>
         </div>
     );

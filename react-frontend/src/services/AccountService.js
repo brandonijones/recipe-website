@@ -20,8 +20,20 @@ class AccountService {
         return axios.get(`${ACCOUNT_API_BASE_URL}/verify?code=${verificationCode}`);
     }
 
+    authorizePasswordReset(code) {
+        return axios.get(`${ACCOUNT_API_BASE_URL}/reset-password?code=${code}`);
+    }
+
     resendEmail(email) {
         return axios.post(ACCOUNT_API_BASE_URL + "/resend-email", email);
+    }
+
+    emailPasswordReset(email) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/forgot-password", email);
+    }
+
+    changePassword(newPassword) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/change-password", newPassword);
     }
 
     login(formData) {

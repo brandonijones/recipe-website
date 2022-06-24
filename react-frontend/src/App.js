@@ -4,6 +4,8 @@ import NavigationBar from './components/NavigationBar';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Login from './pages/Login';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Registration from './pages/Registration';
@@ -67,6 +69,8 @@ function App() {
             <Route index element={<Home />} />
             <Route path='/search' element={<Search />} />
             <Route path='/login' element={<Login />} />
+            <Route path='/account/profile' element={<Profile />} />
+            <Route path='/account/settings' element={<Settings />} />
             <Route path='/forgot-password' element={ <ForgotPassword /> } />
             <Route path='/reset-password/:code' element={ <ResetPassword /> } />
             <Route path='/registration' element={<Registration />} />
