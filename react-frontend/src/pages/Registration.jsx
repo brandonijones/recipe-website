@@ -11,6 +11,10 @@ function Registration() {
     const [usernameTaken, setUsernameTaken] = useState(false);
     const [emailTaken, setEmailTaken] = useState(false);
     const [isSending, setIsSending] = useState(false);
+    const [passwordVisibility, setPasswordVisibilty] = useState(false);
+    const [passwordConfirmVisibility, setPasswordConfirmVisibility] = useState(false);
+    const [passwordType, setPasswordType] = useState("password");
+    const [passwordConfirmType, setPasswordConfirmType] = useState("password");
 
     const initialValues = {
         firstName: "",
@@ -79,6 +83,26 @@ function Registration() {
         navigate("/registration-success");
     }
 
+    const showPassword = () => {
+        if (!passwordVisibility) {
+            setPasswordType("text");
+            setPasswordVisibilty(true);
+        } else {
+            setPasswordType("password");
+            setPasswordVisibilty(false);
+        }
+    }
+
+    const showPasswordConfirmation = () => {
+        if (!passwordConfirmVisibility) {
+            setPasswordConfirmType("text");
+            setPasswordConfirmVisibility(true);
+        } else {
+            setPasswordConfirmType("password");
+            setPasswordConfirmVisibility(false);
+        }
+    }
+
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
             <h2>Sign Up</h2>
@@ -121,17 +145,27 @@ function Registration() {
                         </div>
                         <div className='mb-1'>
                             <label className='form-label'>Create a password</label>
-                            <Field name="password" type="password" className="form-control" placeholder='Must be at least 6 characters...' />
-                            {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
-                            {!errors.password && touched.password && <div className='text-success'>Password is valid!</div>}
+                            <Field name="password" type={passwordType} className="form-control" placeholder='Must be at least 6 characters...' />
                         </div>
-                        <div className='mb-4'>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" onClick={showPassword} />
+                            <label className="form-check-label">Show password</label>
+                        </div>
+                        {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                        {!errors.password && touched.password && <div className='text-success'>Password is valid!</div>}
+                        <div className='mb-1'>
                             <label className='form-label'>Confirm password</label>
-                            <Field name="passwordConfirmation" type="password" className="form-control" placeholder='Re-type password...'/>
-                            {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
-                            {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches!</div>}
+                            <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type password...'/>
                         </div>
-                        <p>Already have an account? <a href="/login">Log in</a></p>
+                        <div className="form-check mb-1">
+                            <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
+                            <label className="form-check-label">Show password</label>
+                        </div>
+                        {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                        {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches!</div>}
+                        
+                        <p className="mt-4" >Already have an account? <a href="/login">Log in</a></p>
+                        
                         <div>
                             <button type="submit" className="btn btn-primary my-3">Register</button>
                             { isSending && <span>loading...</span> }

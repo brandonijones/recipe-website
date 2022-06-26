@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Alert } from "react-bootstrap";
 import AccountService from "../services/AccountService";
+import PasswordResetEmailSent from "../components/PasswordResetEmailSent";
 
 function ForgotPassword() {
 
@@ -10,11 +11,14 @@ function ForgotPassword() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [isSending, setIsSending] = useState(false);
+    const [enteredEmail, setEnteredEmail] = useState("");
+    const [isSent, setIsSent] = useState(false);
 
-    const resetPassword = (email) => {
+    const resetPassword = (formData) => {
         setIsSending(true);
+        setEnteredEmail(formData.email);
 
-        AccountService.emailPasswordReset(email).then((response) => {
+        AccountService.emailPasswordReset(formData).then((response) => {
             console.log(response.data);
 
             setIsSending(false);
@@ -27,9 +31,9 @@ function ForgotPassword() {
                 setMessage(response.data.message);
                 setShowError(false);
                 setShowSuccess(true);
+                setIsSent(true)
             }
         });
-
     }
     
     const initialValues = {
@@ -45,33 +49,39 @@ function ForgotPassword() {
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
             <h1>Reset Password</h1>
-            <Alert show={showError} variant="danger"> <p>{ message }</p> </Alert>
-            <Alert show={showSuccess} variant="success"> <p>{ message }</p> </Alert>
-            <Formik
-                onSubmit={resetPassword} 
-                initialValues={initialValues}
-                validationSchema={validationSchema} 
-            >
-                {({ errors, touched, isValidating }) => (
-                    <Form>
-                        <div className='mb-1'>
-                            <label className='form-label'>Email:</label>
-                            <Field name="email" type="email" className="form-control" placeholder='Type your email address...'/>
-                            {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
-                        </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Confirm Email:</label>
-                            <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
-                            {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
-                            {!errors.emailConfirmation && touched.emailConfirmation && <div className='text-success'>Email matches!</div>}
-                        </div>
-                        <div>
-                            <button type="submit" className="btn btn-primary my-3">Send email</button>
-                            { isSending && <span>loading...</span> }
-                        </div>
-                    </Form>
-                )}
-            </Formik>
+            {
+                !isSent ? 
+                <div>
+                    <Alert show={showError} variant="danger"> <p>{ message }</p> </Alert>
+                    <Alert show={showSuccess} variant="success"> <p>{ message }</p> </Alert>
+                    <Formik
+                        onSubmit={resetPassword} 
+                        initialValues={initialValues}
+                        validationSchema={validationSchema} 
+                    >
+                        {({ errors, touched, isValidating }) => (
+                            <Form>
+                                <div className='mb-1'>
+                                    <label className='form-label'>Email:</label>
+                                    <Field name="email" type="email" className="form-control" placeholder='Type your email address...'/>
+                                    {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
+                                </div>
+                                <div className='mb-1'>
+                                    <label className='form-label'>Confirm Email:</label>
+                                    <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
+                                    {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
+                                    {!errors.emailConfirmation && touched.emailConfirmation && <div className='text-success'>Email matches!</div>}
+                                </div>
+                                <div>
+                                    <button type="submit" className="btn btn-primary my-3">Send email</button>
+                                    { isSending && <span>loading...</span> }
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div> :
+                <PasswordResetEmailSent email={enteredEmail} />
+            }  
         </div>
     );
 }

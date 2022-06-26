@@ -14,6 +14,11 @@ function AuthorizedPasswordResetRequest(props) {
     const [isSending, setIsSending] = useState(false);
     const { authState } = useContext(AuthContext);
 
+    const [passwordVisibility, setPasswordVisibilty] = useState(false);
+    const [passwordConfirmVisibility, setPasswordConfirmVisibility] = useState(false);
+    const [passwordType, setPasswordType] = useState("password");
+    const [passwordConfirmType, setPasswordConfirmType] = useState("password");
+
     const resetPassword = (formData) => {
         setIsSending(true);
         let newPasswordRequest; 
@@ -49,6 +54,26 @@ function AuthorizedPasswordResetRequest(props) {
         passwordConfirmation: Yup.string().oneOf([Yup.ref('newPassword'), null], "Passwords do not match!").required("Please confirm your password.")
     });
 
+    const showPassword = () => {
+        if (!passwordVisibility) {
+            setPasswordType("text");
+            setPasswordVisibilty(true);
+        } else {
+            setPasswordType("password");
+            setPasswordVisibilty(false);
+        }
+    }
+
+    const showPasswordConfirmation = () => {
+        if (!passwordConfirmVisibility) {
+            setPasswordConfirmType("text");
+            setPasswordConfirmVisibility(true);
+        } else {
+            setPasswordConfirmType("password");
+            setPasswordConfirmVisibility(false);
+        }
+    }
+
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
             <Alert show={show} variant="danger"> <p>{ errorMessage }</p> </Alert>
@@ -61,15 +86,23 @@ function AuthorizedPasswordResetRequest(props) {
                     <Form>
                         <div className='mb-1'>
                             <label className='form-label'>New password:</label>
-                            <Field name="newPassword" type="password" className="form-control" placeholder='Create a new password...'/>
-                            {errors.newPassword && touched.newPassword && <div className='text-danger'>{errors.newPassword}</div>}
+                            <Field name="newPassword" type={passwordType} className="form-control" placeholder='Create a new password...'/>
                         </div>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" onClick={showPassword} />
+                            <label className="form-check-label">Show password</label>
+                        </div>
+                        {errors.newPassword && touched.newPassword && <div className='text-danger'>{errors.newPassword}</div>}
                         <div className='mb-1'>
                             <label className='form-label'>Confirm new password:</label>
-                            <Field name="passwordConfirmation" type="password" className="form-control" placeholder='Re-type your new password...'/>
-                            {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
-                            {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches</div>}
+                            <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type your new password...'/>
                         </div>
+                        <div className="form-check mb-1">
+                            <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
+                            <label className="form-check-label">Show password</label>
+                        </div>
+                        {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                        {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches!</div>}
                         <div>
                             <button type="submit" className="btn btn-primary my-3">Reset Password</button>
                             { isSending && <span>loading...</span> }

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import AuthorizedPasswordResetRequest from "../components/AuthorizedPasswordResetRequest";
 import AccountService from "../services/AccountService";
+import { useNavigate } from 'react-router';
 
 function ResetPassword() {
 
+    const navigate = useNavigate();
     let { code } = useParams();
     const [isAuthorized, setIsAuthorized] = useState(false);
 
@@ -13,6 +15,8 @@ function ResetPassword() {
             console.log(response.data);
             if (response.data) {
                 setIsAuthorized(true);
+            } else {
+                navigate("/");
             }
         })
     }, []);

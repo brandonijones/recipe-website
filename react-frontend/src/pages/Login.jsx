@@ -14,6 +14,8 @@ function Login() {
     const [loginError, setLoginError] = useState("");
     const { setAuthState } = useContext(AuthContext);
     const [isSending, setIsSending] = useState(false);
+    const [passwordVisibility, setPasswordVisibilty] = useState(false);
+    const [passwordType, setPasswordType] = useState("password");
 
     const initialValues = {
         user: "",
@@ -56,6 +58,16 @@ function Login() {
         password: Yup.string().required("Please enter your password.")
     });
 
+    const showPassword = () => {
+        if (!passwordVisibility) {
+            setPasswordType("text");
+            setPasswordVisibilty(true);
+        } else {
+            setPasswordType("password");
+            setPasswordVisibilty(false);
+        }
+    }
+
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
             <h2>Log In</h2>
@@ -72,11 +84,15 @@ function Login() {
                             <Field name="user" className="form-control" placeholder='Enter your email or username...'/>
                             {errors.user && touched.user && <div className='text-danger'>{errors.user}</div>}
                         </div>
-                        <div className='mb-4'>
+                        <div className='mb-1'>
                             <label className='form-label'>Password:</label>
-                            <Field name="password" type="password" className="form-control" placeholder='Enter your password...' />
-                            {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                            <Field name="password" type={passwordType} className="form-control" placeholder='Enter your password...' />
                         </div>
+                        <div className="form-check mb-4">
+                            <input className="form-check-input" type="checkbox" onClick={showPassword} />
+                            <label className="form-check-label">Show password</label>
+                        </div>
+                        {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
                         <div className='container'>
                             <p>Need to create an account? <a href="/registration">Sign up</a></p>
                             <p>Need a new email verification link? <a href="/resend-email">Send now</a> </p>
