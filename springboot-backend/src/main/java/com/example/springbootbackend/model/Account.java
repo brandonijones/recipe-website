@@ -1,12 +1,15 @@
 package com.example.springbootbackend.model;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @Table(name = "accounts")
-public class Account {
+public class Account implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,11 +42,16 @@ public class Account {
     private boolean locked = false;
     private boolean enabled = false;
 
-    @Column(name = "verification_code", length = 64)
-    private String verificationCode;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+//    @OneToOne
+//    @JoinColumn(name = "email_token")
+//    private EmailVerificationToken emailToken;
+//
+//    @OneToOne
+//    @JoinColumn(name = "password_token")
+//    private ForgotPasswordToken passwordToken;
 
     // Default constructor
     public Account() {}
@@ -149,14 +157,6 @@ public class Account {
         this.enabled = enabled;
     }
 
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -164,4 +164,20 @@ public class Account {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+//    public EmailVerificationToken getEmailToken() {
+//        return emailToken;
+//    }
+//
+//    public void setEmailToken(EmailVerificationToken emailToken) {
+//        this.emailToken = emailToken;
+//    }
+//
+//    public ForgotPasswordToken getPasswordToken() {
+//        return passwordToken;
+//    }
+//
+//    public void setPasswordToken(ForgotPasswordToken passwordToken) {
+//        this.passwordToken = passwordToken;
+//    }
 }

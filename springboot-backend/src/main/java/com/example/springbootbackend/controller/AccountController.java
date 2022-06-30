@@ -8,27 +8,17 @@ import com.example.springbootbackend.service.AccountServices;
 import com.example.springbootbackend.service.RegistrationService;
 import com.example.springbootbackend.verification.ResendRequest;
 import com.example.springbootbackend.verification.ResendResponse;
+import com.example.springbootbackend.verification.VerifyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -78,10 +68,7 @@ public class AccountController {
 
         String siteURL = getSiteURL(request) + "/api/v1/account";
 
-//        System.out.println(siteURL);
-
         registrationService.register(account);
-        registrationService.sendVerificationEmail(account);
         return "registration success";
     }
 
@@ -91,12 +78,8 @@ public class AccountController {
     }
 
     @GetMapping("/verify")
-    public String verifyAccount(@Param("code") String code) {
-        if (registrationService.verify(code)) {
-            return "verify_success";
-        } else {
-            return "verify_fail";
-        }
+    public VerifyResponse verifyAccount(@Param("code") String code) {
+        return registrationService.verifyEmail(code);
     }
 
     private String getSiteURL(HttpServletRequest request) {
@@ -119,6 +102,7 @@ public class AccountController {
         boolean isValid = jwtTokenUtil.validateAccessToken(token);
 
         if (isValid) {
+            // The subject contains the values that will be stored in the authContext hook in the front end
             String[] subject = jwtTokenUtil.getSubject(token).split(", ");
             response.setUser(subject);
             response.setMessage("JWT is valid.");
@@ -136,9 +120,9 @@ public class AccountController {
         return accountServices.forgotPassword(request);
     }
 
-    @GetMapping("/reset-password")
-    public boolean authorizeReset(@Param("code") String code) {
-        return accountServices.verifyReset(code);
+    @GetMapping("/authorize-password-reset")
+    public VerifyResponse authorizePasswordReset(@Param("code") String code) {
+        return accountServices.authorizePasswordReset(code);
     }
 
     @PostMapping("/change-password")

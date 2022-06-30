@@ -13,18 +13,18 @@ function ResetPassword() {
     useEffect(() => {
         AccountService.authorizePasswordReset(code).then((response) => {
             console.log(response.data);
-            if (response.data) {
+            if (!response.data.error) {
                 setIsAuthorized(true);
-            } else {
-                navigate("/");
             }
+            
+            
         })
     }, []);
 
     return (
         <div>
             <h1>Reset Password page</h1>
-            { isAuthorized ? <AuthorizedPasswordResetRequest code={code} /> : <p>Cannot reset password.</p> }
+            { isAuthorized ? <AuthorizedPasswordResetRequest code={code} /> : <p>Cannot reset password. Invalid URL or link is expired.</p> }
         </div>
     );
 }

@@ -1,10 +1,10 @@
 import React from "react";
 
-function VerifyFail() {
+function VerifyFail(props) {
 
     return (
         <div>
-            <h1>Your account has already been activated.</h1>
+            <h1> { props.errorMessage } </h1>
         </div>
     );
 }

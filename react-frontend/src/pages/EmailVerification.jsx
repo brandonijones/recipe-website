@@ -10,20 +10,24 @@ import AccountService from '../services/AccountService';
 function EmailVerification() {
     let { code } = useParams();
     const [isVerified, setIsVerified] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         AccountService.verify(code).then((response) => {
             console.log(response.data);
-            let message = response.data;
-            if (message === "verify_success") {
+
+            if (!response.data.error) {
                 setIsVerified(true);
+                
             }
+
+            setErrorMessage(response.data.message);
         });
     }, []);
 
     return (
         <div className='text-center m-4'>
-            { isVerified ? <VerifySuccess /> : <VerifyFail /> }
+            { isVerified ? <VerifySuccess /> : <VerifyFail errorMessage={errorMessage} /> }
         </div>
     );
 }

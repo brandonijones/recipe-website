@@ -21,7 +21,7 @@ class AccountService {
     }
 
     authorizePasswordReset(code) {
-        return axios.get(`${ACCOUNT_API_BASE_URL}/reset-password?code=${code}`);
+        return axios.get(`${ACCOUNT_API_BASE_URL}/authorize-password-reset?code=${code}`);
     }
 
     resendEmail(email) {

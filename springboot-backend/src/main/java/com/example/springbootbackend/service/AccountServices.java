@@ -3,7 +3,10 @@ package com.example.springbootbackend.service;
 import com.example.springbootbackend.auth.*;
 import com.example.springbootbackend.jwt.JwtTokenUtil;
 import com.example.springbootbackend.model.Account;
+import com.example.springbootbackend.model.ForgotPasswordToken;
 import com.example.springbootbackend.repository.AccountRepository;
+import com.example.springbootbackend.repository.ForgotPasswordTokenRepository;
+import com.example.springbootbackend.verification.VerifyResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,12 +17,16 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 
 @Service
 public class AccountServices {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private ForgotPasswordTokenRepository passwordTokenRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -100,13 +107,16 @@ public class AccountServices {
         ForgotPasswordResponse response = new ForgotPasswordResponse();
         Account account = accountRepository.findByEmail(request.getEmail());
 
+
+        // Account was not found with the given email
         if (account == null) {
             response.setError(true);
-            response.setMessage("This email was not found in our records.");
+            response.setMessage("Email cannot be found in our records.");
             response.setEmail(request.getEmail());
             return response;
         }
 
+        // Account has not been activated yet
         if (!account.isEnabled()) {
             response.setError(true);
             response.setMessage("Please activate your account before resetting your password.");
@@ -114,14 +124,29 @@ public class AccountServices {
             return response;
         }
 
-        // Using the verification code
+        // Check if a token with this email already exists (request sent but not confirmed)
+        ForgotPasswordToken passwordToken = passwordTokenRepository.findByEmail(request.getEmail());
         String randomCode = RandomString.make(64);
-        account.setVerificationCode(randomCode);
+        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime expiresAt = createdAt.plusMinutes(15);
+        if (passwordToken != null) {
+            // Update the token if the email already exists in the table
+            passwordToken.setAccount(account);
+            passwordToken.setCode(randomCode);
+            passwordToken.setCreatedAt(createdAt);
+            passwordToken.setExpiresAt(expiresAt);
+            passwordToken.setConfirmedAt(null);
+        } else {
+            // Create a new token if there hasn't been a "forgot password" request with this email
+            passwordToken = new ForgotPasswordToken(account, randomCode, createdAt, expiresAt);
+        }
+
         accountRepository.save(account);
+        passwordTokenRepository.save(passwordToken);
 
         // Send email
         try {
-            sendForgotPasswordEmail(account);
+            sendForgotPasswordEmail(account, passwordToken);
             response.setError(false);
             response.setMessage("Password reset email has been sent!");
             response.setEmail(request.getEmail());
@@ -137,16 +162,17 @@ public class AccountServices {
         return response;
     }
 
-    private void sendForgotPasswordEmail(Account account) throws MessagingException, UnsupportedEncodingException {
+    private void sendForgotPasswordEmail(Account account, ForgotPasswordToken passwordToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Reset your password";
         String senderName = "Recipe Website";
 
-        String resetURL = "http://localhost:3000/reset-password/" + account.getVerificationCode();
+        String resetURL = "http://localhost:3000/reset-password/" + passwordToken.getCode();
 
         // Mail content
         String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
         mailContent += "<p>Please click the link below to reset your password.</p>";
         mailContent += "<a href=" + resetURL + ">RESET PASSWORD</a>";
+        mailContent += "<p>This link will expire in 15 minutes.</p>";
         mailContent += "<p>Thank you, <br> The Recipe Website Team";
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -161,16 +187,55 @@ public class AccountServices {
         mailSender.send(message);
     }
 
-    public boolean verifyReset(String verificationCode) {
-        Account account = accountRepository.findByVerificationCode(verificationCode);
+    public VerifyResponse authorizePasswordReset(String verificationCode) {
+        VerifyResponse response = new VerifyResponse();
 
-        if (account == null || !account.isEnabled()) {
-            return false;
-        } else {
-//            account.setVerificationCode(null);
-            accountRepository.save(account);
-            return true;
+        ForgotPasswordToken passwordToken = passwordTokenRepository.findByCode(verificationCode);
+
+        if (passwordToken == null) {
+            response.setError(true);
+            response.setMessage("Cannot reset password. Invalid URL.");
+            return response;
         }
+
+        Account account = accountRepository.findByEmail(passwordToken.getAccount().getEmail());
+
+        if (account == null) {
+            response.setError(true);
+            response.setMessage("This account does not exist.");
+            return response;
+        }
+
+        if (!account.isEnabled()) {
+            response.setError(true);
+            response.setMessage("Account needs to be activated before the password can be reset.");
+            return response;
+        }
+
+        LocalDateTime confirmedTime = LocalDateTime.now();
+        LocalDateTime expirationTime = passwordToken.getExpiresAt();
+        passwordToken.setConfirmedAt(confirmedTime);
+
+        if (confirmedTime.isAfter(expirationTime)) {
+            response.setError(true);
+            response.setMessage("Link has expired. Please get a new password reset link.");
+            passwordTokenRepository.delete(passwordToken);
+            return response;
+        }
+
+        // Code is valid
+        passwordTokenRepository.save(passwordToken);
+        response.setError(false);
+        response.setMessage("Authorized to change password.");
+        return response;
+
+//        if (account == null || !account.isEnabled()) {
+//            return false;
+//        } else {
+//            account.setVerificationCode(null);
+//            accountRepository.save(account);
+//            return true;
+//        }
     }
 
     public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
@@ -179,21 +244,25 @@ public class AccountServices {
         String code = request.getVerificationCode();
         int userId = request.getUserId();
         String newPassword = request.getNewPassword();
+        String newEncodedPassword = bCryptPasswordEncoder.encode(newPassword);
 
         if (code != null) {
-            Account account = accountRepository.findByVerificationCode(code);
+            ForgotPasswordToken passwordToken = passwordTokenRepository.findByCode(code);
 
             // In case verification code is invalid
-            if (account == null) {
+            if (passwordToken == null) {
                 response.setError(true);
                 response.setMessage("Account cannot be found with verification code.");
                 return response;
             }
 
+            Account account = accountRepository.findByEmail(passwordToken.getAccount().getEmail());
+
             // Resetting password through forgot password link
-            account.setPassword(encodedNewPassword(newPassword));
-            account.setVerificationCode(null);
+            account.setPassword(newEncodedPassword);
+            passwordToken.setCode(null);
             accountRepository.save(account);
+            passwordTokenRepository.save(passwordToken);
 
             // Generate response
             response.setError(false);
@@ -201,6 +270,7 @@ public class AccountServices {
             return response;
         }
 
+        // Resetting password through account settings
         if (userId != 0) {
             Account account = accountRepository.findById(userId);
 
@@ -211,9 +281,7 @@ public class AccountServices {
                 return response;
             }
 
-            // Resetting password through account settings
-            account.setPassword(encodedNewPassword(newPassword));
-            account.setVerificationCode(null);
+            account.setPassword(newEncodedPassword);
             accountRepository.save(account);
 
             // Generate response
@@ -226,9 +294,5 @@ public class AccountServices {
         response.setError(true);
         response.setMessage("Password cannot be reset. Invalid verification code or user id.");
         return response;
-    }
-
-    private String encodedNewPassword(String newPassword) {
-        return bCryptPasswordEncoder.encode(newPassword);
     }
 }
