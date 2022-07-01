@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -20,9 +19,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT a FROM Account a WHERE a.id = ?1")
     Account findById(int id);
-
-//    @Query("SELECT a FROM Account a WHERE a.verificationCode = ?1")
-//    Account findByVerificationCode(String code);
 
     @Transactional
     @Modifying

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 import VerifySuccess from '../components/VerifySuccess';
@@ -7,8 +7,11 @@ import VerifyFail from '../components/VerifyFail';
 
 import AccountService from '../services/AccountService';
 
+
 function EmailVerification() {
-    let { code } = useParams();
+    // let { code } = useParams();
+    let [searchParams, setSearchParams] = useSearchParams();
+    const code = searchParams.get("code");
     const [isVerified, setIsVerified] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 

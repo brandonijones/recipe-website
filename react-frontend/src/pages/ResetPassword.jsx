@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router-dom";
 import AuthorizedPasswordResetRequest from "../components/AuthorizedPasswordResetRequest";
 import AccountService from "../services/AccountService";
 import { useNavigate } from 'react-router';
@@ -7,7 +7,9 @@ import { useNavigate } from 'react-router';
 function ResetPassword() {
 
     const navigate = useNavigate();
-    let { code } = useParams();
+    // let { code } = useParams();
+    let [searchParams, setSearchParams] = useSearchParams();
+    const code = searchParams.get("code");
     const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {

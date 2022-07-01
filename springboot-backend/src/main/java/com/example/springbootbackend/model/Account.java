@@ -45,14 +45,6 @@ public class Account implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-//    @OneToOne
-//    @JoinColumn(name = "email_token")
-//    private EmailVerificationToken emailToken;
-//
-//    @OneToOne
-//    @JoinColumn(name = "password_token")
-//    private ForgotPasswordToken passwordToken;
-
     // Default constructor
     public Account() {}
 

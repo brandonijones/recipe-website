@@ -72,11 +72,11 @@ function App() {
             <Route path='/account/profile' element={<Profile />} />
             <Route path='/account/settings' element={<Settings />} />
             <Route path='/forgot-password' element={ <ForgotPassword /> } />
-            <Route path='/reset-password/:code' element={ <ResetPassword /> } />
+            <Route path='/reset-password' element={ <ResetPassword /> } />
             <Route path='/registration' element={<Registration />} />
             <Route path='/registration-success' element={<ConfirmEmail />} />
             <Route path='/resend-email' element={<ResendEmail />} />
-            <Route path='/verify/:code' element={<EmailVerification />} />
+            <Route path='/verify' element={<EmailVerification />} />
             <Route path='*' element={<PageNotFound />} />
           </Route>
         </Routes>

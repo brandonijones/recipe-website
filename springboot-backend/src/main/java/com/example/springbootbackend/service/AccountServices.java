@@ -37,8 +37,6 @@ public class AccountServices {
     @Autowired
     private JavaMailSender mailSender;
 
-    private AccountInfo accountInfo;
-
     public AuthResponse login(AuthRequest request) {
         Account account;
         AuthResponse response = new AuthResponse();
@@ -107,7 +105,6 @@ public class AccountServices {
         ForgotPasswordResponse response = new ForgotPasswordResponse();
         Account account = accountRepository.findByEmail(request.getEmail());
 
-
         // Account was not found with the given email
         if (account == null) {
             response.setError(true);
@@ -129,6 +126,7 @@ public class AccountServices {
         String randomCode = RandomString.make(64);
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(15);
+
         if (passwordToken != null) {
             // Update the token if the email already exists in the table
             passwordToken.setAccount(account);
@@ -165,8 +163,7 @@ public class AccountServices {
     private void sendForgotPasswordEmail(Account account, ForgotPasswordToken passwordToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Reset your password";
         String senderName = "Recipe Website";
-
-        String resetURL = "http://localhost:3000/reset-password/" + passwordToken.getCode();
+        String resetURL = "http://localhost:3000/reset-password?code=" + passwordToken.getCode();
 
         // Mail content
         String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
@@ -200,18 +197,21 @@ public class AccountServices {
 
         Account account = accountRepository.findByEmail(passwordToken.getAccount().getEmail());
 
+        // Check to see if account exists
         if (account == null) {
             response.setError(true);
             response.setMessage("This account does not exist.");
             return response;
         }
 
+        // Check to see if the account is enabled
         if (!account.isEnabled()) {
             response.setError(true);
             response.setMessage("Account needs to be activated before the password can be reset.");
             return response;
         }
 
+        // Check to see if token is expired
         LocalDateTime confirmedTime = LocalDateTime.now();
         LocalDateTime expirationTime = passwordToken.getExpiresAt();
         passwordToken.setConfirmedAt(confirmedTime);
@@ -228,14 +228,6 @@ public class AccountServices {
         response.setError(false);
         response.setMessage("Authorized to change password.");
         return response;
-
-//        if (account == null || !account.isEnabled()) {
-//            return false;
-//        } else {
-//            account.setVerificationCode(null);
-//            accountRepository.save(account);
-//            return true;
-//        }
     }
 
     public ChangePasswordResponse changePassword(ChangePasswordRequest request) {

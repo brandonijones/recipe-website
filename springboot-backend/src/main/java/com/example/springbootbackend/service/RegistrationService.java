@@ -38,26 +38,26 @@ public class RegistrationService {
 
     public void register(Account account) throws UnsupportedEncodingException, MessagingException {
 
-        // Encoding the password for the database
-        String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        account.setPassword(encodedPassword);
-
-        account.setCreatedAt(LocalDateTime.now());
-
         // Creating a random verification code
         String randomCode = generateVerificationCode();
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(15);
-        EmailVerificationToken token = new EmailVerificationToken(account, randomCode, createdAt, expiresAt);
 
-//        account.setEmailToken(token);
+        // Encoding the password for the database
+        String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
+        account.setPassword(encodedPassword);
+        account.setCreatedAt(createdAt);
         account.setEnabled(false);
-        token.setAccount(account);
 
-        sendVerificationEmail(account, token);
+        // Create email verification token
+        EmailVerificationToken emailToken = new EmailVerificationToken(account, randomCode, createdAt, expiresAt);
+
+        // Save account info and token to the database
         accountRepository.save(account);
-        emailTokenRepository.save(token);
-//        return accountRepository.save(account);
+        emailTokenRepository.save(emailToken);
+
+        // Send email
+        sendVerificationEmail(account, emailToken);
     }
 
     public ResendResponse resendEmail(ResendRequest request) {
@@ -117,9 +117,7 @@ public class RegistrationService {
     public void sendVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Activate your account";
         String senderName = "Recipe Website";
-
-//        String verifyURL = siteURL + "/verify?code=" + account.getVerificationCode();
-        String verifyURL = "http://localhost:3000/verify/" + emailToken.getCode();
+        String verifyURL = "http://localhost:3000/verify?code=" + emailToken.getCode();
 
         // Mail content
         String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
@@ -145,7 +143,7 @@ public class RegistrationService {
 
         EmailVerificationToken emailToken = emailTokenRepository.findByCode(verificationCode);
 
-        //
+        // Checking if token exists
         if (emailToken == null) {
             response.setError(true);
             response.setMessage("Could not verify email. Invalid URL or account is already activated.");
@@ -172,6 +170,7 @@ public class RegistrationService {
         LocalDateTime expirationTime = emailToken.getExpiresAt();
         emailToken.setConfirmedAt(confirmedTime);
 
+        // Checking if token is expired
         if (confirmedTime.isAfter(expirationTime)) {
             response.setError(true);
             response.setMessage("Link has expired. Please get a new verification link.");
@@ -187,6 +186,5 @@ public class RegistrationService {
         response.setError(false);
         response.setMessage("Account successfully activated!");
         return response;
-
     }
 }

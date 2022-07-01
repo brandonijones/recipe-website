@@ -66,8 +66,6 @@ public class AccountController {
     public String register(@RequestBody Account account, HttpServletRequest request)
             throws UnsupportedEncodingException, MessagingException {
 
-        String siteURL = getSiteURL(request) + "/api/v1/account";
-
         registrationService.register(account);
         return "registration success";
     }
