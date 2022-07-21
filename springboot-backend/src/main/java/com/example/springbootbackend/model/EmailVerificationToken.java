@@ -10,7 +10,7 @@ public class EmailVerificationToken implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
     @OneToOne
     @JoinColumn(name = "email", referencedColumnName = "email", unique = true, nullable = false)
@@ -37,11 +37,11 @@ public class EmailVerificationToken implements Serializable {
         this.expiresAt = expiresAt;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

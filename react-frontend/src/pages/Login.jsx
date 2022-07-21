@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../helpers/AuthContext';
@@ -43,8 +42,7 @@ function Login() {
                     status: true,
                     id: user.id,
                     username: user.username,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
+                    name: user.name,
                     role: user.role
                 });
                 navigate("/");

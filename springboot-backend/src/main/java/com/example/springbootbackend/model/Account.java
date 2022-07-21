@@ -1,11 +1,8 @@
 package com.example.springbootbackend.model;
 
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "accounts")
@@ -13,13 +10,10 @@ public class Account implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
-    @Column(name = "first_name", nullable = false, length = 20)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 20)
-    private String lastName;
+    @Column(name = "name", nullable = false, length = 30)
+    private String name;
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
@@ -33,10 +27,10 @@ public class Account implements Serializable {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "bio", length = 150)
+    @Column(name = "bio", length = 250)
     private String bio;
 
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", length = 1024)
     private String profilePicture;
 
     private boolean locked = false;
@@ -48,41 +42,28 @@ public class Account implements Serializable {
     // Default constructor
     public Account() {}
 
-    public Account(String firstName, String lastName, String email, String username, String password, String role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Account(String name, String email, String username, String password, String role) {
+        this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFullName() {
-        return firstName + " " + lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -155,6 +136,14 @@ public class Account implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String toString() {
+        return "id: " + getId() + "\n" +
+                "username: " + getUsername() + "\n" +
+                "email: " + getEmail() + "\n" +
+                "name: " + getName() + "\n" +
+                "role: " + getRole() + "\n";
     }
 
 //    public EmailVerificationToken getEmailToken() {

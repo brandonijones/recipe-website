@@ -1,6 +1,8 @@
 package com.example.springbootbackend.service;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.example.springbootbackend.auth.*;
+import com.example.springbootbackend.cloudinary.config.CloudinaryConfig;
 import com.example.springbootbackend.jwt.JwtTokenUtil;
 import com.example.springbootbackend.model.Account;
 import com.example.springbootbackend.model.ForgotPasswordToken;
@@ -9,6 +11,7 @@ import com.example.springbootbackend.repository.ForgotPasswordTokenRepository;
 import com.example.springbootbackend.verification.VerifyResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,8 +19,12 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import com.cloudinary.*;
 
 @Service
 public class AccountServices {
@@ -37,6 +44,9 @@ public class AccountServices {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private CloudinaryConfig cloudinaryConfig;
+
     public AuthResponse login(AuthRequest request) {
         Account account;
         AuthResponse response = new AuthResponse();
@@ -50,7 +60,7 @@ public class AccountServices {
         if (usernameCheck == null && emailCheck == null) {
             response.setError(true);
             response.setAccessToken(null);
-            response.setMessage("Username or email is incorrect.");
+            response.setMessage("Email or username is incorrect.");
             return response;
         }
 
@@ -166,7 +176,7 @@ public class AccountServices {
         String resetURL = "http://localhost:3000/reset-password?code=" + passwordToken.getCode();
 
         // Mail content
-        String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
+        String mailContent = "<p>Dear " + account.getName() + ",</p>";
         mailContent += "<p>Please click the link below to reset your password.</p>";
         mailContent += "<a href=" + resetURL + ">RESET PASSWORD</a>";
         mailContent += "<p>This link will expire in 15 minutes.</p>";
@@ -286,5 +296,146 @@ public class AccountServices {
         response.setError(true);
         response.setMessage("Password cannot be reset. Invalid verification code or user id.");
         return response;
+    }
+
+    public AuthResponse getCurrentUser(String header, String userId) {
+        AuthResponse response = new AuthResponse();
+
+        if (userId.equals("undefined")) {
+            response.setError(true);
+            response.setMessage("React hook has not been set yet.");
+            return response;
+        }
+
+        if (userId.equals("null")) {
+            response.setError(true);
+            response.setMessage("User not logged in.");
+            return response;
+        }
+
+        String token = header.split(" ")[1];
+        boolean isValid = jwtTokenUtil.validateAccessToken(token);
+
+        if (!isValid) {
+            response.setError(true);
+            response.setMessage(jwtTokenUtil.getMessage());
+            return response;
+        }
+
+        int id = Integer.parseInt(userId);
+
+        // Check to see if account exists first
+        if (accountRepository.findById(id) == null) {
+            response.setError(true);
+            response.setMessage("Account does not exist.");
+            return response;
+        }
+
+        Account account = accountRepository.findById(id);
+        response.setError(false);
+        response.setMessage("JWT is valid.");
+        response.setUser(account);
+
+        return response;
+    }
+
+    public AuthResponse editProfile(String header, AccountInfo updatedAccount) {
+        AuthResponse response = new AuthResponse();
+
+        String token = header.split(" ")[1];
+        boolean isValid = jwtTokenUtil.validateAccessToken(token);
+
+        if (!isValid) {
+            response.setError(true);
+            response.setMessage("JWT is invalid");
+            return response;
+        }
+
+        Account account;
+
+        if(accountRepository.findById(updatedAccount.getId()) == null) {
+            response.setError(true);
+            response.setMessage("Account could not be found.");
+            return response;
+        } else {
+            account = accountRepository.findById(updatedAccount.getId());
+        }
+
+        String originalProfilePicture = account.getProfilePicture();
+        String originalName = account.getName();
+        String originalUsername = account.getUsername();
+        String originalBio = account.getBio();
+
+        String updatedProfilePicture = updatedAccount.getProfilePicture();
+        String updatedName = updatedAccount.getName();
+        String updatedUsername = updatedAccount.getUsername();
+        String updatedBio = updatedAccount.getBio();
+
+        // Updating profile picture URL if needed
+        if (updatedProfilePicture != null && !updatedProfilePicture.equals(originalProfilePicture)) {
+
+            System.out.println("Original profile picture: " + originalProfilePicture + " ******");
+            try {
+                deleteOriginalFromCloudinary(originalProfilePicture);
+            } catch (IOException e) {
+                e.printStackTrace();
+                response.setError(true);
+                response.setMessage("Error deleting original image from cloudinary.");
+                return response;
+            }
+
+            account.setProfilePicture(updatedProfilePicture);
+        }
+
+        // Updating the name if needed
+        if (!updatedName.equals(originalName)) {
+            account.setName(updatedName);
+        }
+
+        // Updating the username if needed
+        if (!updatedUsername.equals(originalUsername)) {
+            account.setUsername(updatedUsername);
+        }
+
+        // Updating the bio if needed
+        if (updatedBio == null) {
+            account.setBio(null);
+        } else {
+            if (!updatedBio.equals(originalBio)) {
+                account.setBio(updatedBio);
+            }
+        }
+
+
+
+        accountRepository.save(account);
+
+        // Generating a new JWT
+        String newAccessToken = jwtTokenUtil.generateAccessToken(account);
+
+        response.setError(false);
+        response.setMessage("Profile successfully updated!");
+        response.setAccessToken(newAccessToken);
+        response.setUser(account);
+        return response;
+    }
+
+    private void deleteOriginalFromCloudinary(String originalURL) throws IOException {
+
+        // The public id / filename is the last url parameter
+        String[] urlArray = originalURL.split("/");
+        int lastIndex = urlArray.length - 1;
+        String fileName = urlArray[lastIndex];
+
+        // Separate the public id from the file extension
+        String[] fileArray = fileName.split("\\.");
+        String publicId = "recipe_website/profile_images/" + fileArray[0];
+
+        Cloudinary cloudinary = cloudinaryConfig.getInstance();
+
+        if (!publicId.equals("recipe_website/profile_images/default_profile_picture")) {
+            cloudinary.uploader().destroy(publicId,
+                    ObjectUtils.asMap("resource_type", "image"));
+        }
     }
 }

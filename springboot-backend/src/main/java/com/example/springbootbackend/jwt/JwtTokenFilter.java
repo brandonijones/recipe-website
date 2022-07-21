@@ -67,12 +67,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private Account getAccountDetails(String token) {
         Account accountDetails = new Account();
-        String[] jwtSubject = jwtTokenUtil.getSubject(token).split(",");
+        String[] jwtSubject = jwtTokenUtil.getSubject(token).split(", ");
 
         accountDetails.setId(Integer.parseInt(jwtSubject[0]));
         accountDetails.setUsername(jwtSubject[1]);
-        accountDetails.setFirstName(jwtSubject[2]);
-        accountDetails.setLastName(jwtSubject[3]);
+        accountDetails.setName(jwtSubject[2]);
+        accountDetails.setRole(jwtSubject[3]);
 
         return accountDetails;
     }

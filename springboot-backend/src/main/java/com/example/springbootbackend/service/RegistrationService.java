@@ -43,11 +43,16 @@ public class RegistrationService {
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(15);
 
+        // Default profile picture
+        String defaultProfilePictureURL = "https://res.cloudinary.com/dxgfugkbb/image/upload/v1657138912/recipe_website/profile_images/default_profile_picture.png";
+
         // Encoding the password for the database
         String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
         account.setPassword(encodedPassword);
         account.setCreatedAt(createdAt);
         account.setEnabled(false);
+        account.setRole("USER");
+        account.setProfilePicture(defaultProfilePictureURL);
 
         // Create email verification token
         EmailVerificationToken emailToken = new EmailVerificationToken(account, randomCode, createdAt, expiresAt);
@@ -120,7 +125,7 @@ public class RegistrationService {
         String verifyURL = "http://localhost:3000/verify?code=" + emailToken.getCode();
 
         // Mail content
-        String mailContent = "<p>Dear " + account.getFullName() + ",</p>";
+        String mailContent = "<p>Dear " + account.getName() + ",</p>";
         mailContent += "<p>Please click the link below to verify your email and activate your account.</p>";
         mailContent += "<a href=" + verifyURL + ">VERIFY</a>";
         mailContent += "<p>This link will expire in 15 minutes.</p>";

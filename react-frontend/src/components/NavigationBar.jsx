@@ -7,8 +7,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 function NavigationBar() {
 
@@ -21,8 +21,7 @@ function NavigationBar() {
             status: false,
             id: null,
             username: "",
-            firstName: "",
-            lastName: "",
+            name: "",
             role: ""
         });
     }

@@ -1,0 +1,38 @@
+.edit-profile-img {
+    width: 10rem;
+    border-radius: 50%;
+
+}
+
+.edit-profile-link {
+    cursor: pointer;
+    color: #0d6efd;
+}
+
+.remove-pfp-link {
+    cursor: pointer;
+}
+
+.cropper {
+    position: relative;
+    background: #33333300;
+    height: 25rem;
+    width: auto;
+}
+
+.cropper-sliders {
+    flex-direction: column;
+}
+
+.croppper-sliders-container {
+    width: 100%;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.file-close {
+    cursor: pointer;
+}

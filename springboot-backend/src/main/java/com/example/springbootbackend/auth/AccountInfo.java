@@ -1,20 +1,24 @@
 package com.example.springbootbackend.auth;
 
+import java.time.LocalDateTime;
+
 public class AccountInfo {
 
     private int id;
     private String username;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String role;
+    private String email;
+    private String bio;
+    private String profilePicture;
+    private LocalDateTime createdAt;
 
     public AccountInfo() { }
 
-    public AccountInfo(int id, String username, String firstName, String lastName, String role) {
+    public AccountInfo(int id, String username, String name, String role) {
         this.id = id;
         this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.role = role;
     }
 
@@ -34,20 +38,12 @@ public class AccountInfo {
         this.username = username;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getRole() {
@@ -56,5 +52,37 @@ public class AccountInfo {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

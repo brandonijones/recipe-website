@@ -41,9 +41,34 @@ class AccountService {
     }
 
     validate() {
-        return axios.get(ACCOUNT_API_BASE_URL + "/auth/validation", { headers: {
-            authorization: 'bearer ' + localStorage.getItem("accessToken")
-        }});
+        return axios.get(ACCOUNT_API_BASE_URL + "/auth/validation", 
+            { 
+                headers: {
+                    authorization: 'bearer ' + localStorage.getItem("accessToken")
+                }
+            }
+        );
+    }
+
+    getCurrentUser(id) {
+        return axios.get(`${ACCOUNT_API_BASE_URL}/current-user?id=${id}`, 
+            { 
+                headers: {
+                    authorization: "bearer " + localStorage.getItem("accessToken")
+                }
+            }
+        );
+    }
+
+    editProfile(updatedProfile) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/edit-profile", 
+            updatedProfile, 
+            { 
+                headers: {
+                    authorization: "bearer " + localStorage.getItem("accessToken")
+                }
+            }
+        );
     }
 }
 

@@ -95,7 +95,7 @@ public class AccountController {
 
         AuthResponse response = new AuthResponse();
 
-        // Authorization: Bearer [jwt token]
+        // authorization: bearer [jwt token]
         String token = header.split(" ")[1];
         boolean isValid = jwtTokenUtil.validateAccessToken(token);
 
@@ -103,11 +103,22 @@ public class AccountController {
             // The subject contains the values that will be stored in the authContext hook in the front end
             String[] subject = jwtTokenUtil.getSubject(token).split(", ");
             response.setUser(subject);
+
+            // Double-checking that the user provided in the subject still exists
+            int currentUserId = response.getUser().getId();
+            if (accountRepository.findById(currentUserId) == null) {
+                response.setMessage("Account does not exist.");
+                response.setError(true);
+                return response;
+            }
+
+            // Successful validation of the JWT
             response.setMessage("JWT is valid.");
             response.setError(false);
             return response;
         }
 
+        // Some other error occurred with the JWT
         response.setMessage(jwtTokenUtil.getMessage());
         response.setError(true);
         return response;
@@ -126,5 +137,15 @@ public class AccountController {
     @PostMapping("/change-password")
     public ChangePasswordResponse changePassword(@RequestBody ChangePasswordRequest request) {
         return accountServices.changePassword(request);
+    }
+
+    @GetMapping("/current-user")
+    public AuthResponse getCurrentUser(@RequestHeader("authorization") String header, @Param("id") String id) {
+        return accountServices.getCurrentUser(header, id);
+    }
+
+    @PostMapping("/edit-profile")
+    public AuthResponse editProfile(@RequestHeader("authorization") String header, @RequestBody AccountInfo updatedAccount) {
+        return accountServices.editProfile(header, updatedAccount);
     }
 }

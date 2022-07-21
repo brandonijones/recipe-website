@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import AccountService from '../services/AccountService';
@@ -17,7 +16,7 @@ function Registration() {
     const [passwordConfirmType, setPasswordConfirmType] = useState("password");
 
     const initialValues = {
-        firstName: "",
+        name: "",
         lastName: "",
         email: "",
         username: "",
@@ -26,11 +25,10 @@ function Registration() {
     }
 
     const validationSchema = Yup.object().shape({
-        firstName: Yup.string().min(1, 'Too Short!').max(20, "Too Long!").required("First name is required."),
-        lastName: Yup.string().min(1, 'Too Short!').max(20, "Too Long!").required("Last name is required."),
+        name: Yup.string().min(1, 'Too Short!').max(30, "Too Long! Maximum 30 characters.").required("Please enter your name."),
         email: Yup.string().email("Please enter a valid email address.").required("Email is required."),
         emailConfirmation: Yup.string().oneOf([Yup.ref("email"), null], "Email does not match!").required("Please confirm your email address."),
-        username: Yup.string().max(30, "Too Long!").required("Username is required."),
+        username: Yup.string().max(30, "Too Long! Maximum 30 characters.").required("Username is required.").matches(/^[A-Za-z0-9_]+$/, "Username cannot contain special characters or white spaces"),
         password: Yup.string().min(6, 'Must be at least 6 characters long').required("Please provide a password."),
         passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], "Passwords do not match!").required("Please confirm your password.")
     });
@@ -71,12 +69,11 @@ function Registration() {
         return error;
     }
 
-    const registerUser = (data) => {
-        const newAccount = {...data, role: "USER"}
+    const registerUser = (newAccountData) => {
         setIsSending(true);
 
         /* A successful registration will take you to the home page */
-        AccountService.register(newAccount).then((response) => {
+        AccountService.register(newAccountData).then((response) => {
             // console.log(response.data);
             setIsSending(false);
         });
@@ -114,16 +111,10 @@ function Registration() {
                 {({ errors, touched, isValidating }) => (
                     <Form>
                         <div className='mb-1'>
-                            <label className='form-label'>First Name:</label>
-                            <Field name="firstName" className="form-control" placeholder='John'/>
-                            {errors.firstName && touched.firstName && <div className='text-danger'>{errors.firstName}</div>}
-                            {!errors.firstName && touched.firstName && <div className='text-success'>Looks good!</div>}
-                        </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Last Name:</label>
-                            <Field name="lastName" className="form-control" placeholder='Doe'/>
-                            {errors.lastName && touched.lastName && <div className='text-danger'>{errors.lastName}</div>}
-                            {!errors.lastName && touched.lastName && <div className='text-success'>Looks good!</div>}
+                            <label className='form-label'>Name:</label>
+                            <Field name="name" className="form-control" placeholder='John Doe'/>
+                            {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
+                            {!errors.name && touched.name && <div className='text-success'>Looks good!</div>}
                         </div>
                         <div className='mb-1'>
                             <label className='form-label'>Email:</label>

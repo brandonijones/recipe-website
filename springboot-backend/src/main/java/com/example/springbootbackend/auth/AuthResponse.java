@@ -1,5 +1,6 @@
 package com.example.springbootbackend.auth;
 
+import com.example.springbootbackend.model.Account;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AuthResponse {
@@ -44,11 +45,28 @@ public class AuthResponse {
         this.message = message;
     }
 
+    public AccountInfo getUser() {
+        return user;
+    }
+
+    // Setting uer information based on jwt subject
+    // Needed for the authState hook on the frontend
     public void setUser(String[] subject) {
         user.setId(Integer.parseInt(subject[0]));
         user.setUsername(subject[1]);
-        user.setFirstName(subject[2]);
-        user.setLastName(subject[3]);
-        user.setRole(subject[4]);
+        user.setName(subject[2]);
+        user.setRole(subject[3]);
+    }
+
+    // Setting user information to use for editing account settings
+    public void setUser(Account account) {
+        user.setId(account.getId());
+        user.setUsername(account.getUsername());
+        user.setName(account.getName());
+        user.setRole(account.getRole());
+        user.setEmail(account.getEmail());
+        user.setBio(account.getBio());
+        user.setProfilePicture(account.getProfilePicture());
+        user.setCreatedAt(account.getCreatedAt());
     }
 }
