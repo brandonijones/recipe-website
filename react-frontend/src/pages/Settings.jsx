@@ -2,15 +2,18 @@ import { React, useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../helpers/AuthContext';
 import AccountService from '../services/AccountService';
 import { useNavigate } from 'react-router';
+import { Routes, Route, Link, Outlet } from 'react-router-dom';
 
 /* Components */
 import EditProfile from '../components/EditProfile';
 import ChangeEmail from '../components/ChangeEmail';
 import ChangePassword from '../components/ChangePassword';
+import Loading from '../components/Loading';
 
 /* Import react boostrap styling */
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
+import Nav from 'react-bootstrap/Nav';
 
 function Settings() {
     const navigate = useNavigate();
@@ -25,44 +28,46 @@ function Settings() {
         
         if (authState.status === 'undefined') {
             setIsLoading(true);
+        } else {
+            setIsLoading(false);
         }
 
         if (authState.status === false) {
             navigate("/login");
         }
 
-        AccountService.getCurrentUser(authState.id).then((response) => {
+        // AccountService.getCurrentUser(authState.id).then((response) => {
 
-            console.log("Settings check: \n")
-            console.log(response.data);
+        //     console.log("Settings check: \n")
+        //     console.log(response.data);
 
-            if (!response.data.error) {
-                setIsLoading(false);
-            }
-            const accountInfo = response.data.user;
-            setCurrentUser({...accountInfo});
-        });
+        //     if (!response.data.error) {
+        //         setIsLoading(false);
+        //     }
+        //     const accountInfo = response.data.user;
+        //     setCurrentUser({...accountInfo});
+        // });
     }, [authState, navigate]);
 
     return (
         <div >
             { isLoading ? 
-                <div>
-                    <h1>Loading...</h1>
-                </div> :
+                <Loading /> :
                 <div className='border container-sm my-5' style={{"maxWidth": "50rem"}}>
                     <h1>Account Settings</h1>
-                    <Tabs>
-                        <Tab eventKey="profile" title="Edit Profile" >
-                            <EditProfile currentUser={currentUser} setCurrentUser={setCurrentUser} />
-                        </Tab>
-                        <Tab eventKey="changeEmail" title="Change Email Address">
-                            <ChangeEmail />
-                        </Tab>
-                        <Tab eventKey="changePassword" title="Change Password" >
-                            <ChangePassword />
-                        </Tab>
-                    </Tabs>
+                    <Nav>
+                        <Nav.Item>
+                            <Link to='/account/settings/edit-profile'>Edit Profile</Link>   
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Link to='/account/settings/change-email'>Change Email</Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Link to='/account/settings/change-password'>Change Password</Link>
+                        </Nav.Item>
+                    </Nav>
+
+                    <Outlet />
                 </div>
             } 
         </div>

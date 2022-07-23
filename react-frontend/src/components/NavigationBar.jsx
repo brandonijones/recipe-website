@@ -20,8 +20,11 @@ function NavigationBar() {
         setAuthState({
             status: false,
             id: null,
+            email: "",
             username: "",
             name: "",
+            profilePicture: "",
+            bio: "",
             role: ""
         });
     }
@@ -51,7 +54,7 @@ function NavigationBar() {
                                     <div className='dropdown-content' >
                                     { authState.status ?
                                         <div>
-                                            <Link to='/account/profile'>Profile</Link>
+                                            <Link to={'/profile/' + authState.username}>Profile</Link>
                                             <Link to='/account/settings'>Settings</Link>
                                             <br />
                                             <Link to="/" onClick={logout} >Logout</Link>

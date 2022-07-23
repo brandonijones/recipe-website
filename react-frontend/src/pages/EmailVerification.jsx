@@ -12,20 +12,32 @@ function EmailVerification() {
     // let { code } = useParams();
     let [searchParams, setSearchParams] = useSearchParams();
     const code = searchParams.get("code");
+    const changeEmailCode = searchParams.get("changeEmailCode");
     const [isVerified, setIsVerified] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        AccountService.verify(code).then((response) => {
-            console.log(response.data);
+        if (code !== null) {
+            console.log("regular code called");
+            AccountService.verify(code).then((response) => {
+                console.log(response.data);
 
-            if (!response.data.error) {
-                setIsVerified(true);
-                
-            }
+                if (!response.data.error) {
+                    setIsVerified(true);   
+                }
+                setErrorMessage(response.data.message);
+            });
+        }
 
-            setErrorMessage(response.data.message);
-        });
+        if (changeEmailCode !== null) {
+            console.log("change email code called");
+            AccountService.verifyNewEmail(changeEmailCode).then((response) => {
+                if (!response.data.error) {
+                    setIsVerified(true);    
+                }
+                setErrorMessage(response.data.message);
+            });
+        }
     }, []);
 
     return (

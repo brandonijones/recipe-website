@@ -22,6 +22,9 @@ import PageNotFound from './pages/PageNotFound';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Navbar.css';
 import './styles/Settings.css';
+import EditProfile from './components/EditProfile';
+import ChangeEmail from './components/ChangeEmail';
+import ChangePassword from './components/ChangePassword';
 
 
 function App() {
@@ -36,8 +39,11 @@ function App() {
         setAuthState({
           status: false,
           id: null,
+          email: "",
           username: "",
           name: "",
+          profilePicture: "",
+          bio: "",
           role: ""
         });
       } else {
@@ -45,8 +51,11 @@ function App() {
         setAuthState({
             status: true,
             id: user.id,
+            email: user.email,
             username: user.username,
             name: user.name,
+            profilePicture: user.profilePicture,
+            bio: user.bio,
             role: user.role
         });
       }
@@ -61,8 +70,13 @@ function App() {
             <Route index element={<Home />} />
             <Route path='/search' element={<Search />} />
             <Route path='/login' element={<Login />} />
-            <Route path='/account/profile' element={<Profile />} />
-            <Route path='/account/settings' element={<Settings />} />
+            <Route path='/profile/:username' element={<Profile />} />
+            <Route path='/account/settings' element={<Settings />}>
+              <Route index element={<EditProfile />} />
+              <Route path='edit-profile' element={<EditProfile />} />
+              <Route path='change-email' element={<ChangeEmail />} />
+              <Route path='change-password' element={<ChangePassword />} />
+            </Route>
             <Route path='/forgot-password' element={ <ForgotPassword /> } />
             <Route path='/reset-password' element={ <ResetPassword /> } />
             <Route path='/registration' element={<Registration />} />

@@ -114,25 +114,21 @@ function Registration() {
                             <label className='form-label'>Name:</label>
                             <Field name="name" className="form-control" placeholder='John Doe'/>
                             {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
-                            {!errors.name && touched.name && <div className='text-success'>Looks good!</div>}
-                        </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Email:</label>
-                            <Field name="email" validate={validateEmail} type="email" className="form-control" placeholder='Type your email address...'/>
-                            {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
-                            {!errors.email && touched.email && <div className='text-success'>Email is valid!</div>}
-                        </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Confirm Email:</label>
-                            <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
-                            {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
-                            {!errors.emailConfirmation && touched.emailConfirmation && <div className='text-success'>Email matches!</div>}
                         </div>
                         <div className='mb-1'>
                             <label className='form-label'>Create a username</label>
                             <Field name="username" validate={validateUsername} className="form-control" placeholder='Create a unique username...'/>
                             {errors.username && touched.username && <div className='text-danger'>{errors.username}</div>}
-                            {!errors.username && touched.username && <div className='text-success'>Username is valid!</div>}
+                        </div>
+                        <div className='mb-1'>
+                            <label className='form-label'>Email:</label>
+                            <Field name="email" validate={validateEmail} type="email" className="form-control" placeholder='Type your email address...'/>
+                            {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
+                        </div>
+                        <div className='mb-1'>
+                            <label className='form-label'>Confirm Email:</label>
+                            <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
+                            {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
                         </div>
                         <div className='mb-1'>
                             <label className='form-label'>Create a password</label>
@@ -143,7 +139,6 @@ function Registration() {
                             <label className="form-check-label">Show password</label>
                         </div>
                         {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
-                        {!errors.password && touched.password && <div className='text-success'>Password is valid!</div>}
                         <div className='mb-1'>
                             <label className='form-label'>Confirm password</label>
                             <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type password...'/>
@@ -153,7 +148,6 @@ function Registration() {
                             <label className="form-check-label">Show password</label>
                         </div>
                         {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
-                        {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches!</div>}
                         
                         <p className="mt-4" >Already have an account? <a href="/login">Log in</a></p>
                         

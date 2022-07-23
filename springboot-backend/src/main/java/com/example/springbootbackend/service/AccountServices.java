@@ -5,8 +5,10 @@ import com.example.springbootbackend.auth.*;
 import com.example.springbootbackend.cloudinary.config.CloudinaryConfig;
 import com.example.springbootbackend.jwt.JwtTokenUtil;
 import com.example.springbootbackend.model.Account;
+import com.example.springbootbackend.model.EmailVerificationToken;
 import com.example.springbootbackend.model.ForgotPasswordToken;
 import com.example.springbootbackend.repository.AccountRepository;
+import com.example.springbootbackend.repository.EmailTokenRepository;
 import com.example.springbootbackend.repository.ForgotPasswordTokenRepository;
 import com.example.springbootbackend.verification.VerifyResponse;
 import net.bytebuddy.utility.RandomString;
@@ -34,6 +36,9 @@ public class AccountServices {
 
     @Autowired
     private ForgotPasswordTokenRepository passwordTokenRepository;
+
+    @Autowired
+    private EmailTokenRepository emailTokenRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -139,18 +144,24 @@ public class AccountServices {
 
         if (passwordToken != null) {
             // Update the token if the email already exists in the table
-            passwordToken.setAccount(account);
-            passwordToken.setCode(randomCode);
-            passwordToken.setCreatedAt(createdAt);
-            passwordToken.setExpiresAt(expiresAt);
-            passwordToken.setConfirmedAt(null);
+//            passwordToken.setAccount(account);
+//            passwordToken.setCode(randomCode);
+//            passwordToken.setCreatedAt(createdAt);
+//            passwordToken.setExpiresAt(expiresAt);
+//            passwordToken.setConfirmedAt(null);
+            int tokenId = passwordToken.getId();
+            passwordTokenRepository.updateCode(randomCode, tokenId);
+            passwordTokenRepository.updateCreatedAt(createdAt, tokenId);
+            passwordTokenRepository.updateExpiresAt(expiresAt, tokenId);
+            passwordTokenRepository.deleteConfirmedAt(tokenId);
         } else {
             // Create a new token if there hasn't been a "forgot password" request with this email
             passwordToken = new ForgotPasswordToken(account, randomCode, createdAt, expiresAt);
+            passwordTokenRepository.save(passwordToken);
         }
 
-        accountRepository.save(account);
-        passwordTokenRepository.save(passwordToken);
+//        accountRepository.save(account);
+//        passwordTokenRepository.save(passwordToken);
 
         // Send email
         try {
@@ -224,7 +235,8 @@ public class AccountServices {
         // Check to see if token is expired
         LocalDateTime confirmedTime = LocalDateTime.now();
         LocalDateTime expirationTime = passwordToken.getExpiresAt();
-        passwordToken.setConfirmedAt(confirmedTime);
+//        passwordToken.setConfirmedAt(confirmedTime);
+        passwordTokenRepository.updateConfirmedAt(confirmedTime, passwordToken.getId());
 
         if (confirmedTime.isAfter(expirationTime)) {
             response.setError(true);
@@ -234,7 +246,7 @@ public class AccountServices {
         }
 
         // Code is valid
-        passwordTokenRepository.save(passwordToken);
+//        passwordTokenRepository.save(passwordToken);
         response.setError(false);
         response.setMessage("Authorized to change password.");
         return response;
@@ -261,10 +273,12 @@ public class AccountServices {
             Account account = accountRepository.findByEmail(passwordToken.getAccount().getEmail());
 
             // Resetting password through forgot password link
-            account.setPassword(newEncodedPassword);
-            passwordToken.setCode(null);
-            accountRepository.save(account);
-            passwordTokenRepository.save(passwordToken);
+//            account.setPassword(newEncodedPassword);
+            accountRepository.updatePassword(newEncodedPassword, account.getId());
+            passwordTokenRepository.deleteCode(passwordToken.getId());
+//            passwordToken.setCode(null);
+//            accountRepository.save(account);
+//            passwordTokenRepository.save(passwordToken);
 
             // Generate response
             response.setError(false);
@@ -283,8 +297,9 @@ public class AccountServices {
                 return response;
             }
 
-            account.setPassword(newEncodedPassword);
-            accountRepository.save(account);
+//            account.setPassword(newEncodedPassword);
+            accountRepository.updatePassword(newPassword, userId);
+//            accountRepository.save(account);
 
             // Generate response
             response.setError(false);
@@ -295,6 +310,231 @@ public class AccountServices {
         // Generate response
         response.setError(true);
         response.setMessage("Password cannot be reset. Invalid verification code or user id.");
+        return response;
+    }
+
+    public VerifyResponse checkEmail(String email) {
+        VerifyResponse response = new VerifyResponse();
+        Account account = accountRepository.findByEmail(email);
+
+        // Check to see if account exists
+        if (account == null) {
+            response.setError(true);
+            response.setMessage("Account cannot be found with given email.");
+            return response;
+        }
+
+        EmailVerificationToken emailToken = emailTokenRepository.findByEmail(email);
+
+        if (emailToken == null) {
+            response.setError(true);
+            response.setMessage("There is no email token.");
+            return response;
+        }
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiresAt = emailToken.getExpiresAt();
+        LocalDateTime confirmedAt = emailToken.getConfirmedAt();
+
+        // Check to see if it's been confirmed
+        if (confirmedAt == null) {
+
+            // Check if verification is expired.
+            if (currentTime.isAfter(expiresAt)) {
+                response.setError(true);
+                response.setMessage("Email verification link is expired. Please request a new link.");
+                return response;
+            }
+
+            // Email token not expired and email has not been confirmed yet.
+            response.setError(true);
+            response.setMessage("Email has not been verified yet. Please check your email for verification link.");
+            return response;
+        }
+
+        // Email has been correctly verified
+        if (confirmedAt.isBefore(expiresAt)) {
+            response.setError(false);
+            response.setMessage("Email is verified.");
+            return response;
+        }
+
+        // Email is not correctly verified somehow
+        response.setError(true);
+        response.setMessage("Email is not correctly verified.");
+        return response;
+    }
+
+    public AuthResponse changeEmail(String header, ChangeEmailRequest request) {
+        AuthResponse response = new AuthResponse();
+
+        String token = header.split(" ")[1];
+        boolean isValid = jwtTokenUtil.validateAccessToken(token);
+
+        if (!isValid) {
+            response.setError(true);
+            response.setMessage("JWT is invalid.");
+            return response;
+        }
+
+        String previousEmail = request.getEmail();
+        String newEmail = request.getNewEmail();
+
+        Account account = accountRepository.findByEmail(previousEmail);
+
+        if (account == null) {
+            response.setError(true);
+            response.setMessage("Account cannot be found with given email.");
+            return response;
+        }
+
+        // Sending an email notice to previous email
+        try {
+            sendEmailChangeNotice(account, newEmail);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            response.setError(true);
+            response.setMessage("Could not send email.");
+            return response;
+        }
+
+        EmailVerificationToken previousEmailToken = emailTokenRepository.findByEmail(previousEmail);
+        emailTokenRepository.delete(previousEmailToken);
+
+        // Updating email in database
+        account.setEmail(newEmail);
+        account.setId(account.getId());
+//        accountRepository.updateEmail(newEmail, account.getId());
+        accountRepository.save(account);
+
+        // Generate new token and token values
+        EmailVerificationToken newEmailToken = new EmailVerificationToken();
+        String randomCode = generateVerificationCode();
+        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime expiresAt = createdAt.plusMinutes(15);
+
+        // Set new token values
+        newEmailToken.setAccount(account);
+        newEmailToken.setCode(randomCode);
+        newEmailToken.setCreatedAt(createdAt);
+        newEmailToken.setExpiresAt(expiresAt);
+        emailTokenRepository.save(newEmailToken);
+
+        String newAccessToken = jwtTokenUtil.generateAccessToken(account);
+
+        // Sending verification link to new email address
+        try {
+            sendNewVerificationEmail(account, newEmailToken);
+            response.setError(false);
+            response.setMessage("New verification email has been sent!");
+            response.setAccessToken(newAccessToken);
+            response.setUser(account);
+            return response;
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        response.setError(true);
+        response.setMessage("Email could not be sent.");
+        return response;
+    }
+
+    private String generateVerificationCode() {
+        return RandomString.make(64);
+    }
+
+    private void sendEmailChangeNotice(Account account, String newEmail) throws MessagingException, UnsupportedEncodingException {
+        String subject = "Your email is being changed";
+        String senderName = "Recipe Website";
+
+        // Mail content
+        String mailContent = "<p>Dear " + account.getUsername() + ",</p>";
+        mailContent += "<p>You have recently requested to update your email to " + newEmail + ".</p>";
+        mailContent += "<p>If this was you, please ignore this email.</p>";
+        mailContent += "<p>If this was not you, please log in to correct the email change or contact us for assistance.</p>";
+        mailContent += "<p>Thank you, <br> The Recipe Website Team";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        // TODO make custom email for this website
+        helper.setFrom("brandonijones@outlook.com", senderName);
+        helper.setTo(account.getEmail());
+        helper.setSubject(subject);
+        helper.setText(mailContent, true);
+
+        mailSender.send(message);
+    }
+
+    private void sendNewVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
+        String subject = "Verify your new email address";
+        String senderName = "Recipe Website";
+        String resetURL = "http://localhost:3000/verify?changeEmailCode=" + emailToken.getCode();
+
+        // Mail content
+        String mailContent = "<p>Dear " + account.getName() + ",</p>";
+        mailContent += "<p>Please click the link below to verify your new email address</p>";
+        mailContent += "<a href=" + resetURL + ">VERIFY EMAIL</a>";
+        mailContent += "<p>This link will expire in 15 minutes.</p>";
+        mailContent += "<p>Thank you, <br> The Recipe Website Team";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        // TODO make custom email for this website
+        helper.setFrom("brandonijones@outlook.com", senderName);
+        helper.setTo(account.getEmail());
+        helper.setSubject(subject);
+        helper.setText(mailContent, true);
+
+        mailSender.send(message);
+    }
+
+    public VerifyResponse verifyNewEmail(String code) {
+        VerifyResponse response = new VerifyResponse();
+
+        EmailVerificationToken emailToken = emailTokenRepository.findByCode(code);
+
+        // Checking if token exists
+        if (emailToken == null) {
+            response.setError(true);
+            response.setMessage("Could not verify email. Invalid URL or account is already activated.");
+            return response;
+        }
+
+        Account account = accountRepository.findByEmail(emailToken.getAccount().getEmail());
+
+        // Account couldn't be found in the database
+        if (account == null) {
+            response.setError(true);
+            response.setMessage("This account does not exist.");
+            return response;
+        }
+
+        LocalDateTime confirmedTime = LocalDateTime.now();
+        LocalDateTime expirationTime = emailToken.getExpiresAt();
+
+//        emailTokenRepository.updateConfirmedAt(confirmedTime, emailToken.getId());
+        emailToken.setConfirmedAt(confirmedTime);
+
+        // Checking if token is expired
+        if (confirmedTime.isAfter(expirationTime)) {
+            response.setError(true);
+            response.setMessage("Link has expired. Please get a new verification link.");
+//            emailTokenRepository.save(emailToken);
+            return response;
+        }
+
+        // Verification code is valid
+//        emailTokenRepository.updateCode(null, emailToken.getId());
+//        accountRepository.enableAccount(account.getEmail());
+        emailToken.setCode(null);
+        account.setEnabled(true);
+        account.setId(account.getId());
+        accountRepository.save(account);
+        emailTokenRepository.save(emailToken);
+        response.setError(false);
+        response.setMessage("Account successfully activated!");
         return response;
     }
 
@@ -361,6 +601,8 @@ public class AccountServices {
             account = accountRepository.findById(updatedAccount.getId());
         }
 
+        int accountId = account.getId();
+
         String originalProfilePicture = account.getProfilePicture();
         String originalName = account.getName();
         String originalUsername = account.getUsername();
@@ -385,30 +627,36 @@ public class AccountServices {
             }
 
             account.setProfilePicture(updatedProfilePicture);
+//            accountRepository.updateProfilePicture(updatedProfilePicture, accountId);
         }
 
         // Updating the name if needed
         if (!updatedName.equals(originalName)) {
             account.setName(updatedName);
+//            accountRepository.updateName(updatedName, accountId);
         }
 
         // Updating the username if needed
         if (!updatedUsername.equals(originalUsername)) {
             account.setUsername(updatedUsername);
+//            accountRepository.updateUsername(updatedUsername, accountId);
         }
 
         // Updating the bio if needed
         if (updatedBio == null) {
             account.setBio(null);
+//            accountRepository.deleteBio(accountId);
         } else {
             if (!updatedBio.equals(originalBio)) {
                 account.setBio(updatedBio);
+//                accountRepository.updateBio(updatedBio, accountId);
             }
         }
-
-
-
+        account.setId(accountId);
         accountRepository.save(account);
+//        System.out.println("Original Account: \n" + account.toString());
+//        Account finishedAccount = accountRepository.findById(accountId);
+//        System.out.println("\nFinished Account: \n" + finishedAccount.toString());
 
         // Generating a new JWT
         String newAccessToken = jwtTokenUtil.generateAccessToken(account);

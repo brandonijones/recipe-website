@@ -41,8 +41,11 @@ function Login() {
                 setAuthState({
                     status: true,
                     id: user.id,
+                    email: user.email,
                     username: user.username,
                     name: user.name,
+                    profilePicture: user.profilePicture,
+                    bio: user.bio,
                     role: user.role
                 });
                 navigate("/");

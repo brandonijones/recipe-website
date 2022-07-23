@@ -1,10 +1,11 @@
-import { React, useCallback, useEffect, useState } from 'react';
+import { React, useCallback, useEffect, useState, useContext } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import AccountService from '../services/AccountService';
 import axios from "axios";
 import Cropper from 'react-easy-crop';
 import CropModal from './crop/CropModal';
+import { AuthContext } from '../helpers/AuthContext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
@@ -12,31 +13,58 @@ import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import Alert from 'react-bootstrap/Alert';
 import Modal from 'react-bootstrap/Modal';
 
-function EditProfile(props) {
+function EditProfile() {
+    const { authState, setAuthState } = useContext(AuthContext);
     const [usernameTaken, setUsernameTaken] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showCropModal, setShowCropModal] = useState(false);
-    const [currentUser, setCurrentUser] = useState(props.currentUser);
+    const [currentUser, setCurrentUser] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [showFileUpload, setShowFileUpload] = useState(false);
-    const [imageURL, setImageURL] = useState(props.currentUser.profilePicture);
+    const [imageURL, setImageURL] = useState(authState.profilePicture);
     const [selectedFile, setSelectedFile] = useState(0);
     const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
+    const [initialValues, setInitialValues] = useState({
+        name: authState.name,
+        username: authState.username,
+        profilePicture: authState.profilePicture,
+        bio: authState.bio,
+        file: null
+    });
+
+    
 
     const DEFAULT_PROFILE_PICTURE = "https://res.cloudinary.com/dxgfugkbb/image/upload/v1657138912/recipe_website/profile_images/default_profile_picture.png";
     const [isDefaltImage, setIsDefaultImage] = useState(true);
 
-    const [charactersLeft, setCharactersLeft] = useState(150);
     const MAX_COUNT = 250;
+    const [charactersLeft, setCharactersLeft] = useState(MAX_COUNT);
+    
 
     useEffect(() => {
         checkInitialBio();
-    }, []);
+    }, [authState]);
+
+    useEffect(() => {
+        setCurrentUser(authState);
+        console.log("authState values (edit profile page):");
+        console.log(authState);
+        setInitialValues(previousState => {
+            return {...previousState, 
+                name: authState.name,
+                username: authState.username,
+                profilePicture: authState.profilePicture,
+                bio: authState.bio,
+                file: null
+            }
+        });
+
+    }, [authState]);
 
     const checkInitialBio = () => {
-        if (currentUser.bio) {
-            let bio = currentUser.bio;
+        if (authState.bio) {
+            let bio = authState.bio;
             
             setCharactersLeft(MAX_COUNT - bio.length);
         }
@@ -54,13 +82,13 @@ function EditProfile(props) {
         console.log("use effect is being called.");
     }, [imageURL]);
 
-    const initialValues = {
-        name: currentUser.name,
-        username: currentUser.username,
-        profilePicture: currentUser.profilePicture,
-        bio: currentUser.bio,
-        file: null
-    }
+    // const initialValues = {
+    //     name: authState.name,
+    //     username: authState.username,
+    //     profilePicture: authState.profilePicture,
+    //     bio: authState.bio,
+    //     file: null
+    // }
 
     const validationSchema = Yup.object().shape({
         name: Yup.string().max(30, "Too long! Maximum 30 characters").required("A display name is required."),
@@ -83,6 +111,7 @@ function EditProfile(props) {
         setIsLoading(true);
         setShowSuccessModal(false);
         console.log(formData);
+        console.log(currentUser);
 
         const cloudinaryRequest = new FormData();
 
@@ -94,8 +123,8 @@ function EditProfile(props) {
                 console.log(response.data);
                 
                 const newURL = response.data.secure_url;
-                let updatedProfile = {...formData, profilePicture: newURL, id: currentUser.id};
-                setCurrentUser(previousState => {
+                let updatedProfile = {...currentUser, profilePicture: newURL, id: authState.id};
+                setAuthState(previousState => {
                     return { ...previousState, profilePicture: newURL }
                 });
                 setImageURL(newURL);
@@ -105,7 +134,7 @@ function EditProfile(props) {
                 updateProfile(updatedProfile);
             });
         } else {
-            let updatedProfile = {...formData, profilePicture: imageURL, id: currentUser.id};
+            let updatedProfile = {...currentUser, profilePicture: imageURL, id: authState.id};
             console.log(updatedProfile);
             
             updateProfile(updatedProfile);
@@ -123,10 +152,11 @@ function EditProfile(props) {
             if (!response.data.error) {
                 let newAccessToken = response.data.accessToken;
                 let user = response.data.user;
+                console.log(user);
 
                 localStorage.setItem("accessToken", newAccessToken);
 
-                props.setCurrentUser({...props.currentUser, 
+                setAuthState({...authState, 
                     name: user.name,
                     username: user.username,
                     bio: user.bio,
@@ -149,7 +179,7 @@ function EditProfile(props) {
             console.log(response.data);
             let account = response.data;
 
-            if (account && account.username !== currentUser.username) {
+            if (account && account.username !== authState.username) {
                 setUsernameTaken(true);
             } else {
                 setUsernameTaken(false);
@@ -176,7 +206,7 @@ function EditProfile(props) {
 
     const cancelProfilePictureUpdate = () => {
         setSelectedFile(null);
-        setImageURL(currentUser.profilePicture);
+        setImageURL(authState.profilePicture);
         setShowFileUpload(false);
         checkInitialBio();
         
@@ -186,19 +216,19 @@ function EditProfile(props) {
         <div>
             
             <Formik
+                enableReinitialize={true}
                 initialValues={initialValues}
                 onSubmit={saveChanges}
                 validationSchema={validationSchema}
             >
                 {({ errors, touched, isValidating, values, setFieldValue }) => (
                     <Form className='mx-md-5' >
-                        <div className='my-4 text-center' >
-                             
+                        <div className='my-4 text-center' > 
                             { showCropModal ? 
                                 <Modal show={showCropModal} backdrop="static" keyboard={false} >
                                     <Modal.Body>
                                         <CropModal 
-                                            currentUser={props.currentUser}
+                                            currentUser={authState}
                                             file={selectedFile} 
                                             setSelectedFile={setSelectedFile} 
                                             photoURL={imageURL} 
@@ -209,7 +239,7 @@ function EditProfile(props) {
                                 </Modal> :
                                 <img 
                                     className='img-fluid edit-profile-img' 
-                                    src={ (selectedFile || isDefaltImage) ? imageURL : currentUser.profilePicture }
+                                    src={ (selectedFile || isDefaltImage) ? imageURL : authState.profilePicture }
                                     alt="Profile"
                                 />
                             }
@@ -234,9 +264,7 @@ function EditProfile(props) {
                                         onClick={cancelProfilePictureUpdate}
                                     >
                                         <span className='me-2'>Cancel</span>
-                                        <FontAwesomeIcon 
-                                            icon={ faCircleXmark }   
-                                        />
+                                        <FontAwesomeIcon icon={ faCircleXmark } />
                                     </div>
                                     {errors.file && <div className='text-danger'>{errors.file}</div>}
                                     <div className='my-3 text-center' >
@@ -248,14 +276,38 @@ function EditProfile(props) {
                         <div className='my-2 row'>
                             <label className='col-form-label col-sm-2'>Name:</label>
                             <div className='col-sm-10'>
-                                <Field name='name' className='form-control' placeholder='John Doe'/>
+                                <Field 
+                                    // value={currentUser.name} 
+                                    name='name' 
+                                    className='form-control' 
+                                    placeholder='John Doe'
+                                    onChange={(event) => {
+                                        setFieldValue('name', event.target.value)
+                                        setCurrentUser(previousState => {
+                                            return {...previousState, name: event.target.value}
+                                        });
+                                    }}
+                                />
+                                {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
                             </div>
-                            {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
+                            
                         </div>
                         <div className='my-2 row'>
                             <label className='col-form-label col-sm-2'>Username:</label>
                             <div className='col-sm-10'>
-                                <Field validate={validateUsername} name="username" className='form-control' placeholder='John Doe'/>
+                                <Field 
+                                    // value={currentUser.username} 
+                                    validate={validateUsername} 
+                                    name="username" 
+                                    className='form-control' 
+                                    placeholder='johndoe'
+                                    onChange={(event) => {
+                                        setFieldValue('username', event.target.value)
+                                        setCurrentUser(previousState => {
+                                            return {...previousState, username: event.target.value}
+                                        });
+                                    }}
+                                />
                                 {errors.username && touched.username && <div className='text-danger'>{errors.username}</div>}
                             </div>
                             
@@ -264,13 +316,17 @@ function EditProfile(props) {
                             <label className='col-form-label col-sm-2'>Bio:</label>
                             <div className='col-sm-10'>
                                 <Field
+                                    // value={currentUser.bio}
                                     as='textarea'
                                     rows={8} 
                                     name='bio' 
                                     className='form-control' 
-                                    onChange={(e) => {
-                                        setFieldValue('bio', e.target.value)
-                                        countCharactersLeft(e.target.value)
+                                    onChange={(event) => {
+                                        setFieldValue('bio', event.target.value)
+                                        setCurrentUser(previousState => {
+                                            return {...previousState, bio: event.target.value}
+                                        });
+                                        countCharactersLeft(event.target.value);
                                     }}
                                     placeholder='Say something about yourself (250 characters max).'/>
                                 <p className={(charactersLeft < 0) && 'text-danger'} >{charactersLeft} characters left</p>
@@ -279,6 +335,7 @@ function EditProfile(props) {
                         </div>
                         <div className='my-3' >
                             <button type='submit' className='btn btn-primary me-1'>Save changes</button>
+                            {/* onClick={() => saveChanges(values)} */}
                             <button 
                                 type='reset' 
                                 className='btn btn-secondary ms-1' 

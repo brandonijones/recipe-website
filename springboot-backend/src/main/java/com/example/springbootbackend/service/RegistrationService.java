@@ -90,10 +90,16 @@ public class RegistrationService {
         String randomCode = generateVerificationCode();
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(15);
-        emailToken.setCode(randomCode);
-        emailToken.setCreatedAt(createdAt);
-        emailToken.setExpiresAt(expiresAt);
+
+        int emailTokenId = emailToken.getId();
+//        emailToken.setCode(randomCode);
+//        emailToken.setCreatedAt(createdAt);
+//        emailToken.setExpiresAt(expiresAt);
         account.setEnabled(false);
+        emailTokenRepository.updateCode(randomCode, emailTokenId);
+        emailTokenRepository.updateCreatedAt(createdAt, emailTokenId);
+        emailTokenRepository.updateExpiresAt(expiresAt, emailTokenId);
+//        accountRepository.disableAccount(account.getEmail());
 
         // Send email
         try {
@@ -101,6 +107,8 @@ public class RegistrationService {
             response.setError(false);
             response.setMessage("New verification email has been sent!");
             response.setEmail(request.getEmail());
+
+            account.setId(account.getId());
             accountRepository.save(account);
             emailTokenRepository.save(emailToken);
             return response;
@@ -174,18 +182,23 @@ public class RegistrationService {
         LocalDateTime confirmedTime = LocalDateTime.now();
         LocalDateTime expirationTime = emailToken.getExpiresAt();
         emailToken.setConfirmedAt(confirmedTime);
+//        emailTokenRepository.updateConfirmedAt(confirmedTime, emailToken.getId());
 
         // Checking if token is expired
         if (confirmedTime.isAfter(expirationTime)) {
             response.setError(true);
             response.setMessage("Link has expired. Please get a new verification link.");
-            emailTokenRepository.save(emailToken);
+//            emailTokenRepository.save(emailToken);
             return response;
         }
 
         // Verification code is valid
         emailToken.setCode(null);
+//        emailTokenRepository.deleteCode(emailToken.getId());
         account.setEnabled(true);
+//        accountRepository.enableAccount(account.getEmail());
+        account.setId(account.getId());
+        emailToken.setId(emailToken.getId());
         accountRepository.save(account);
         emailTokenRepository.save(emailToken);
         response.setError(false);

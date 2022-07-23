@@ -12,7 +12,7 @@ public class ForgotPasswordToken implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "email", referencedColumnName = "email", unique = true, nullable = false)
     private Account account;
 

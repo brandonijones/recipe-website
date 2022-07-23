@@ -1,5 +1,8 @@
 package com.example.springbootbackend.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -38,6 +41,14 @@ public class Account implements Serializable {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private EmailVerificationToken emailToken;
+
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private ForgotPasswordToken passwordToken;
 
     // Default constructor
     public Account() {}
@@ -143,6 +154,7 @@ public class Account implements Serializable {
                 "username: " + getUsername() + "\n" +
                 "email: " + getEmail() + "\n" +
                 "name: " + getName() + "\n" +
+                "bio: " + getBio() + "\n" +
                 "role: " + getRole() + "\n";
     }
 

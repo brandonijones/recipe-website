@@ -80,6 +80,11 @@ public class AccountController {
         return registrationService.verifyEmail(code);
     }
 
+    @GetMapping("/verify-change-email")
+    public VerifyResponse verifyNewEmail(@Param("code") String code) {
+        return accountServices.verifyNewEmail(code);
+    }
+
     private String getSiteURL(HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString();
         return siteURL.replace(request.getServletPath(), "");
@@ -147,5 +152,15 @@ public class AccountController {
     @PostMapping("/edit-profile")
     public AuthResponse editProfile(@RequestHeader("authorization") String header, @RequestBody AccountInfo updatedAccount) {
         return accountServices.editProfile(header, updatedAccount);
+    }
+
+    @PostMapping("/change-email")
+    public AuthResponse changeEmail(@RequestHeader("authorization") String header,  @RequestBody ChangeEmailRequest request) {
+        return accountServices.changeEmail(header, request);
+    }
+
+    @GetMapping("/check-email")
+    public VerifyResponse checkEmail(@Param("email") String email) {
+        return accountServices.checkEmail(email);
     }
 }

@@ -23,7 +23,47 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE Account a SET a.enabled = TRUE WHERE a.email = ?1")
-    int enableAccount(String email);
+    void enableAccount(String email);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.enabled = FALSE WHERE a.email = ?1")
+    void disableAccount(String email);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.password = ?1 WHERE a.id = ?2")
+    void updatePassword(String password, int id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.email = ?1 WHERE a.id = ?2")
+    void updateEmail(String email, int id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.profilePicture = ?1 WHERE a.id = ?2")
+    void updateProfilePicture(String profilePicture, int id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.name = ?1 WHERE a.id = ?2")
+    void updateName(String name, int id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.username = ?1 WHERE a.id = ?2")
+    void updateUsername(String username, int id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.bio = ?1 WHERE a.id = ?2")
+    void updateBio(String bio, int id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.bio = NULL WHERE a.id = ?1")
+    void deleteBio(int id);
 
 
 }

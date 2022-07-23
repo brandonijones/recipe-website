@@ -34,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(account);
     }
 
-    public int enableAccount(String email) {
-        return accountRepository.enableAccount(email);
-    }
+//    public int enableAccount(String email) {
+//        return accountRepository.enableAccount(email);
+//    }
 }

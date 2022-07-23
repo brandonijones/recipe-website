@@ -23,7 +23,14 @@ public class JwtTokenUtil {
 
     public String generateAccessToken(Account account) {
         return Jwts.builder()
-                .setSubject(String.format("%s, %s, %s, %s", account.getId(), account.getUsername(), account.getName(), account.getRole()))
+                .setSubject(String.format("%s, %s, %s, %s, %s, %s, %s",
+                        account.getId(),
+                        account.getEmail(),
+                        account.getUsername(),
+                        account.getName(),
+                        account.getProfilePicture(),
+                        account.getBio(),
+                        account.getRole()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)

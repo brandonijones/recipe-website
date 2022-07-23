@@ -20,6 +20,10 @@ class AccountService {
         return axios.get(`${ACCOUNT_API_BASE_URL}/verify?code=${verificationCode}`);
     }
 
+    verifyNewEmail(verificationCode) {
+        return axios.get(`${ACCOUNT_API_BASE_URL}/verify-change-email?code=${verificationCode}`);
+    }
+
     authorizePasswordReset(code) {
         return axios.get(`${ACCOUNT_API_BASE_URL}/authorize-password-reset?code=${code}`);
     }
@@ -63,6 +67,21 @@ class AccountService {
     editProfile(updatedProfile) {
         return axios.post(ACCOUNT_API_BASE_URL + "/edit-profile", 
             updatedProfile, 
+            { 
+                headers: {
+                    authorization: "bearer " + localStorage.getItem("accessToken")
+                }
+            }
+        );
+    }
+
+    checkEmail(email) {
+        return axios.get(`${ACCOUNT_API_BASE_URL}/check-email?email=${email}`);
+    }
+
+    changeEmail(emailRequest) {
+        return axios.post(ACCOUNT_API_BASE_URL + "/change-email", 
+            emailRequest,
             { 
                 headers: {
                     authorization: "bearer " + localStorage.getItem("accessToken")
