@@ -137,7 +137,7 @@ public class AccountServices {
         }
 
         // Check if a token with this email already exists (request sent but not confirmed)
-        ForgotPasswordToken passwordToken = passwordTokenRepository.findByEmail(request.getEmail());
+        ForgotPasswordToken passwordToken = passwordTokenRepository.findByAccountId(account.getId());
         String randomCode = RandomString.make(64);
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(15);
@@ -293,23 +293,29 @@ public class AccountServices {
             // In case id is invalid
             if (account == null) {
                 response.setError(true);
-                response.setMessage("Account cannot be found with user id.");
+                response.setMessage("Account cannot be found with user id");
                 return response;
             }
 
-//            account.setPassword(newEncodedPassword);
-            accountRepository.updatePassword(newPassword, userId);
-//            accountRepository.save(account);
+            if (bCryptPasswordEncoder.matches(request.getOldPassword(), account.getPassword())) {
+//                account.setPassword(newEncodedPassword);
+                accountRepository.updatePassword(newEncodedPassword, userId);
+//                accountRepository.save(account);
 
-            // Generate response
-            response.setError(false);
-            response.setMessage("Password successfully reset!");
-            return response;
+                // Generate response
+                response.setError(false);
+                response.setMessage("Password successfully reset");
+                return response;
+            } else {
+                response.setError(true);
+                response.setMessage("Old password incorrect");
+                return response;
+            }
         }
 
         // Generate response
         response.setError(true);
-        response.setMessage("Password cannot be reset. Invalid verification code or user id.");
+        response.setMessage("Password reset failed");
         return response;
     }
 
@@ -324,7 +330,7 @@ public class AccountServices {
             return response;
         }
 
-        EmailVerificationToken emailToken = emailTokenRepository.findByEmail(email);
+        EmailVerificationToken emailToken = emailTokenRepository.findByAccountId(account.getId());
 
         if (emailToken == null) {
             response.setError(true);
@@ -398,7 +404,7 @@ public class AccountServices {
             return response;
         }
 
-        EmailVerificationToken previousEmailToken = emailTokenRepository.findByEmail(previousEmail);
+        EmailVerificationToken previousEmailToken = emailTokenRepository.findByAccountId(account.getId());
         emailTokenRepository.delete(previousEmailToken);
 
         // Updating email in database

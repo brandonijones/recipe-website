@@ -52,3 +52,20 @@
     padding: 3px;
 }
 
+.nav-item a {
+    text-decoration: none;
+    /* padding: 5px 10px 5px 10px; */
+    /* margin: 0; */
+    /* border-right-style: solid;
+    border-right-width: thin; */
+    border-color: rgb(39, 39, 39);
+    color: black;
+}
+
+.nav-item a:hover {
+    color: #0d6efd;
+}
+
+.current-page {
+    color: #0d6efd;
+}

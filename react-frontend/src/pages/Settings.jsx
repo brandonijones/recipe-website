@@ -36,17 +36,6 @@ function Settings() {
             navigate("/login");
         }
 
-        // AccountService.getCurrentUser(authState.id).then((response) => {
-
-        //     console.log("Settings check: \n")
-        //     console.log(response.data);
-
-        //     if (!response.data.error) {
-        //         setIsLoading(false);
-        //     }
-        //     const accountInfo = response.data.user;
-        //     setCurrentUser({...accountInfo});
-        // });
     }, [authState, navigate]);
 
     return (
@@ -54,18 +43,25 @@ function Settings() {
             { isLoading ? 
                 <Loading /> :
                 <div className='border container-sm my-5' style={{"maxWidth": "50rem"}}>
-                    <h1>Account Settings</h1>
-                    <Nav>
-                        <Nav.Item>
-                            <Link to='/account/settings/edit-profile'>Edit Profile</Link>   
-                        </Nav.Item>
-                        <Nav.Item>
-                            <Link to='/account/settings/change-email'>Change Email</Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                            <Link to='/account/settings/change-password'>Change Password</Link>
-                        </Nav.Item>
-                    </Nav>
+                    <h1 className='text-center mt-5 mb-3'>Settings</h1>
+                    <div className='my-2' >
+                        <Nav className='row justify-content-evenly' >
+                            <Nav.Item className='col text-center my-auto'>
+                                <Link to='/account/settings/edit-profile'>Edit Profile</Link>   
+                            </Nav.Item>
+                            <Nav.Item className='col text-center my-auto'>
+                                <Link to='/account/settings/change-email'>Change Email</Link>
+                            </Nav.Item>
+                            <Nav.Item className='col text-center my-auto'>
+                                <Link to='/account/settings/change-password'>Change Password</Link>
+                            </Nav.Item>
+                            <Nav.Item className='col text-center my-auto'>
+                                <Link to='/account/settings/delete-account'>Delete Account</Link>
+                            </Nav.Item>
+                        </Nav>
+                    </div>
+
+                    <hr />
 
                     <Outlet />
                 </div>

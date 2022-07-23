@@ -1,5 +1,8 @@
 package com.example.springbootbackend.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,8 +15,9 @@ public class ForgotPasswordToken implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "email", referencedColumnName = "email", unique = true, nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "account_id", referencedColumnName = "id", unique = true, nullable = false)
     private Account account;
 
     @Column(name = "code", unique = true, length = 64)

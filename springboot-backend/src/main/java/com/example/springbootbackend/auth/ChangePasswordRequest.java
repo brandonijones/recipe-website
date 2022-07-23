@@ -5,6 +5,7 @@ public class ChangePasswordRequest {
     private String verificationCode;
     private int userId;
     private String newPassword;
+    private String oldPassword;
 
     public ChangePasswordRequest() { }
 
@@ -36,5 +37,13 @@ public class ChangePasswordRequest {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 }

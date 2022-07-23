@@ -223,7 +223,8 @@ function EditProfile() {
             >
                 {({ errors, touched, isValidating, values, setFieldValue }) => (
                     <Form className='mx-md-5' >
-                        <div className='my-4 text-center' > 
+                        <h3 className='my-3 text-center'>Edit Profile</h3>
+                        <div className='my-4 text-center'> 
                             { showCropModal ? 
                                 <Modal show={showCropModal} backdrop="static" keyboard={false} >
                                     <Modal.Body>

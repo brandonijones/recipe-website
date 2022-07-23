@@ -17,9 +17,7 @@ function ResetPassword() {
             console.log(response.data);
             if (!response.data.error) {
                 setIsAuthorized(true);
-            }
-            
-            
+            }   
         })
     }, []);
 

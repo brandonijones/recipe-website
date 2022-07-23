@@ -68,7 +68,7 @@ public class RegistrationService {
     public ResendResponse resendEmail(ResendRequest request) {
         ResendResponse response = new ResendResponse();
         Account account = accountRepository.findByEmail(request.getEmail());
-        EmailVerificationToken emailToken = emailTokenRepository.findByEmail(request.getEmail());
+
 
         // Account was not found with the given email
         if (account == null) {
@@ -85,6 +85,8 @@ public class RegistrationService {
             response.setEmail(request.getEmail());
             return response;
         }
+
+        EmailVerificationToken emailToken = emailTokenRepository.findByAccountId(account.getId());
 
         // New verification email sent
         String randomCode = generateVerificationCode();

@@ -72,7 +72,7 @@ function Login() {
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
             <h2>Log In</h2>
-            <Alert show={show} variant="danger"> <p>{ loginError }</p> </Alert>
+            
             <Formik 
                 initialValues={initialValues}
                 onSubmit={login}
@@ -99,6 +99,9 @@ function Login() {
                             <p>Need a new email verification link? <a href="/resend-email">Send now</a> </p>
                             <p> <a href="/forgot-password">Forgot password?</a> </p>
                         </div>
+
+                        <Alert show={show} variant="danger"> <p className='text-center my-auto'>{ loginError }</p> </Alert>
+
                         <div>
                             <button type="submit" className="btn btn-primary my-3">Log In</button>
                             { isSending && <span>loading...</span> }

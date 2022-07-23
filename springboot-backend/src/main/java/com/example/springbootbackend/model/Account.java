@@ -42,11 +42,11 @@ public class Account implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private EmailVerificationToken emailToken;
 
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ForgotPasswordToken passwordToken;
 

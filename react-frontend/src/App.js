@@ -10,6 +10,10 @@ import Search from './pages/Search';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import EditProfile from './components/EditProfile';
+import ChangeEmail from './components/ChangeEmail';
+import ChangePassword from './components/ChangePassword';
+import DeleteAccount from './components/DeleteAccount';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Registration from './pages/Registration';
@@ -22,10 +26,6 @@ import PageNotFound from './pages/PageNotFound';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Navbar.css';
 import './styles/Settings.css';
-import EditProfile from './components/EditProfile';
-import ChangeEmail from './components/ChangeEmail';
-import ChangePassword from './components/ChangePassword';
-
 
 function App() {
 
@@ -76,6 +76,7 @@ function App() {
               <Route path='edit-profile' element={<EditProfile />} />
               <Route path='change-email' element={<ChangeEmail />} />
               <Route path='change-password' element={<ChangePassword />} />
+              <Route path='delete-account' element={<DeleteAccount /> } />
             </Route>
             <Route path='/forgot-password' element={ <ForgotPassword /> } />
             <Route path='/reset-password' element={ <ResetPassword /> } />

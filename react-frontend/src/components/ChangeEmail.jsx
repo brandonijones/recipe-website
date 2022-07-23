@@ -1,4 +1,4 @@
-import {React, useContext, useState, useEffect } from 'react';
+import { React, useContext, useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import AccountService from '../services/AccountService';
 import * as Yup from 'yup';
@@ -162,7 +162,7 @@ function ChangeEmail() {
                                     setShowCancelModal(true);
                                 }}
                             >Cancel</button>
-                            { isLoading && <span className='mx-2' >loading...</span> }
+                            { isLoading && <span className='mx-2'>loading...</span> }
                         </div>
                     </Form>
                 )}
