@@ -163,4 +163,10 @@ public class AccountController {
     public VerifyResponse checkEmail(@Param("email") String email) {
         return accountServices.checkEmail(email);
     }
+
+    @DeleteMapping("/delete-account")
+    public VerifyResponse deleteAccount(@RequestHeader("authorization") String header, @RequestBody AccountDeleteRequest data) {
+        System.out.println(header);
+        return accountServices.deleteAccount(header, data);
+    }
 }

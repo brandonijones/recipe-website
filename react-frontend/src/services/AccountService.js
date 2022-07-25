@@ -89,6 +89,20 @@ class AccountService {
             }
         );
     }
+
+    deleteAccount(request) {
+        return axios.delete(ACCOUNT_API_BASE_URL + "/delete-account", 
+            { 
+                data: { 
+                    id: request.accountId ,
+                    password: request.password
+                },
+                headers: {
+                    authorization: "bearer " + localStorage.getItem("accessToken")
+                }
+            }
+        );
+    }
 }
 
 export default new AccountService();

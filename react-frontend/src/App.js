@@ -36,6 +36,7 @@ function App() {
       console.log("Valdation check: \n");
       console.log(response.data);
       if (response.data.error) {
+        localStorage.removeItem("accessToken");
         setAuthState({
           status: false,
           id: null,

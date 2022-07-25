@@ -306,10 +306,6 @@ public class AccountServices {
                 response.setError(false);
                 response.setMessage("Password successfully reset");
                 return response;
-            } else {
-                response.setError(true);
-                response.setMessage("Old password incorrect");
-                return response;
             }
         }
 
@@ -691,5 +687,45 @@ public class AccountServices {
             cloudinary.uploader().destroy(publicId,
                     ObjectUtils.asMap("resource_type", "image"));
         }
+    }
+
+    public VerifyResponse deleteAccount(String header, AccountDeleteRequest request) {
+        VerifyResponse response = new VerifyResponse();
+
+        String token = header.split(" ")[1];
+        boolean isValid = jwtTokenUtil.validateAccessToken(token);
+
+        if (!isValid) {
+            response.setError(true);
+            response.setMessage("JWT is invalid");
+            return response;
+        }
+
+        int accountId = request.getId();
+        Account account = accountRepository.findById(accountId);
+
+        if (account == null) {
+            response.setError(true);
+            response.setMessage("Account cannot be found.");
+            return response;
+        }
+
+        if (!bCryptPasswordEncoder.matches(request.getPassword(), account.getPassword())) {
+            response.setError(true);
+            response.setMessage("Could not delete account. Password was incorrect.");
+            return response;
+        }
+
+        try {
+            deleteOriginalFromCloudinary(account.getProfilePicture());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        accountRepository.delete(account);
+
+        response.setError(false);
+        response.setMessage("Account successfully deleted!");
+        return response;
     }
 }
