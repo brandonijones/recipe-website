@@ -13,7 +13,6 @@ import com.example.springbootbackend.repository.ForgotPasswordTokenRepository;
 import com.example.springbootbackend.verification.VerifyResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +23,6 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import com.cloudinary.*;
 
@@ -51,6 +49,8 @@ public class AccountServices {
 
     @Autowired
     private CloudinaryConfig cloudinaryConfig;
+
+    private final int TIME_TO_EXPIRE = 15;
 
     public AuthResponse login(AuthRequest request) {
         Account account;
@@ -140,28 +140,23 @@ public class AccountServices {
         ForgotPasswordToken passwordToken = passwordTokenRepository.findByAccountId(account.getId());
         String randomCode = RandomString.make(64);
         LocalDateTime createdAt = LocalDateTime.now();
-        LocalDateTime expiresAt = createdAt.plusMinutes(15);
+        LocalDateTime expiresAt = createdAt.plusMinutes(TIME_TO_EXPIRE);
 
         if (passwordToken != null) {
             // Update the token if the email already exists in the table
-//            passwordToken.setAccount(account);
-//            passwordToken.setCode(randomCode);
-//            passwordToken.setCreatedAt(createdAt);
-//            passwordToken.setExpiresAt(expiresAt);
-//            passwordToken.setConfirmedAt(null);
             int tokenId = passwordToken.getId();
-            passwordTokenRepository.updateCode(randomCode, tokenId);
-            passwordTokenRepository.updateCreatedAt(createdAt, tokenId);
-            passwordTokenRepository.updateExpiresAt(expiresAt, tokenId);
-            passwordTokenRepository.deleteConfirmedAt(tokenId);
+            passwordToken.setId(tokenId);
+            passwordToken.setAccount(account);
+            passwordToken.setCode(randomCode);
+            passwordToken.setCreatedAt(createdAt);
+            passwordToken.setExpiresAt(expiresAt);
+            passwordToken.setConfirmedAt(null);
         } else {
             // Create a new token if there hasn't been a "forgot password" request with this email
             passwordToken = new ForgotPasswordToken(account, randomCode, createdAt, expiresAt);
-            passwordTokenRepository.save(passwordToken);
         }
 
-//        accountRepository.save(account);
-//        passwordTokenRepository.save(passwordToken);
+        passwordTokenRepository.save(passwordToken);
 
         // Send email
         try {
@@ -235,8 +230,8 @@ public class AccountServices {
         // Check to see if token is expired
         LocalDateTime confirmedTime = LocalDateTime.now();
         LocalDateTime expirationTime = passwordToken.getExpiresAt();
-//        passwordToken.setConfirmedAt(confirmedTime);
-        passwordTokenRepository.updateConfirmedAt(confirmedTime, passwordToken.getId());
+        passwordToken.setId(passwordToken.getId());
+        passwordToken.setConfirmedAt(confirmedTime);
 
         if (confirmedTime.isAfter(expirationTime)) {
             response.setError(true);
@@ -246,7 +241,7 @@ public class AccountServices {
         }
 
         // Code is valid
-//        passwordTokenRepository.save(passwordToken);
+        passwordTokenRepository.save(passwordToken);
         response.setError(false);
         response.setMessage("Authorized to change password.");
         return response;
@@ -273,12 +268,13 @@ public class AccountServices {
             Account account = accountRepository.findByEmail(passwordToken.getAccount().getEmail());
 
             // Resetting password through forgot password link
-//            account.setPassword(newEncodedPassword);
-            accountRepository.updatePassword(newEncodedPassword, account.getId());
-            passwordTokenRepository.deleteCode(passwordToken.getId());
-//            passwordToken.setCode(null);
-//            accountRepository.save(account);
-//            passwordTokenRepository.save(passwordToken);
+            account.setId(account.getId());
+            account.setPassword(newEncodedPassword);
+            accountRepository.save(account);
+
+            passwordToken.setId(passwordToken.getId());
+            passwordToken.setCode(null);
+            passwordTokenRepository.save(passwordToken);
 
             // Generate response
             response.setError(false);
@@ -298,9 +294,9 @@ public class AccountServices {
             }
 
             if (bCryptPasswordEncoder.matches(request.getOldPassword(), account.getPassword())) {
-//                account.setPassword(newEncodedPassword);
-                accountRepository.updatePassword(newEncodedPassword, userId);
-//                accountRepository.save(account);
+                account.setId(account.getId());
+                account.setPassword(newEncodedPassword);
+                accountRepository.save(account);
 
                 // Generate response
                 response.setError(false);
@@ -406,14 +402,13 @@ public class AccountServices {
         // Updating email in database
         account.setEmail(newEmail);
         account.setId(account.getId());
-//        accountRepository.updateEmail(newEmail, account.getId());
         accountRepository.save(account);
 
         // Generate new token and token values
         EmailVerificationToken newEmailToken = new EmailVerificationToken();
         String randomCode = generateVerificationCode();
         LocalDateTime createdAt = LocalDateTime.now();
-        LocalDateTime expiresAt = createdAt.plusMinutes(15);
+        LocalDateTime expiresAt = createdAt.plusMinutes(TIME_TO_EXPIRE);
 
         // Set new token values
         newEmailToken.setAccount(account);
@@ -515,21 +510,17 @@ public class AccountServices {
 
         LocalDateTime confirmedTime = LocalDateTime.now();
         LocalDateTime expirationTime = emailToken.getExpiresAt();
-
-//        emailTokenRepository.updateConfirmedAt(confirmedTime, emailToken.getId());
         emailToken.setConfirmedAt(confirmedTime);
 
         // Checking if token is expired
         if (confirmedTime.isAfter(expirationTime)) {
             response.setError(true);
             response.setMessage("Link has expired. Please get a new verification link.");
-//            emailTokenRepository.save(emailToken);
+            emailTokenRepository.save(emailToken);
             return response;
         }
 
         // Verification code is valid
-//        emailTokenRepository.updateCode(null, emailToken.getId());
-//        accountRepository.enableAccount(account.getEmail());
         emailToken.setCode(null);
         account.setEnabled(true);
         account.setId(account.getId());
@@ -593,15 +584,13 @@ public class AccountServices {
             return response;
         }
 
-        Account account;
-
         if(accountRepository.findById(updatedAccount.getId()) == null) {
             response.setError(true);
             response.setMessage("Account could not be found.");
             return response;
-        } else {
-            account = accountRepository.findById(updatedAccount.getId());
         }
+
+        Account account = accountRepository.findById(updatedAccount.getId());
 
         int accountId = account.getId();
 
@@ -620,7 +609,7 @@ public class AccountServices {
 
             System.out.println("Original profile picture: " + originalProfilePicture + " ******");
             try {
-                deleteOriginalFromCloudinary(originalProfilePicture);
+                deleteProfileImageFromCloudinary(originalProfilePicture);
             } catch (IOException e) {
                 e.printStackTrace();
                 response.setError(true);
@@ -629,36 +618,28 @@ public class AccountServices {
             }
 
             account.setProfilePicture(updatedProfilePicture);
-//            accountRepository.updateProfilePicture(updatedProfilePicture, accountId);
         }
 
         // Updating the name if needed
         if (!updatedName.equals(originalName)) {
             account.setName(updatedName);
-//            accountRepository.updateName(updatedName, accountId);
         }
 
         // Updating the username if needed
         if (!updatedUsername.equals(originalUsername)) {
             account.setUsername(updatedUsername);
-//            accountRepository.updateUsername(updatedUsername, accountId);
         }
 
         // Updating the bio if needed
         if (updatedBio == null) {
             account.setBio(null);
-//            accountRepository.deleteBio(accountId);
         } else {
             if (!updatedBio.equals(originalBio)) {
                 account.setBio(updatedBio);
-//                accountRepository.updateBio(updatedBio, accountId);
             }
         }
         account.setId(accountId);
         accountRepository.save(account);
-//        System.out.println("Original Account: \n" + account.toString());
-//        Account finishedAccount = accountRepository.findById(accountId);
-//        System.out.println("\nFinished Account: \n" + finishedAccount.toString());
 
         // Generating a new JWT
         String newAccessToken = jwtTokenUtil.generateAccessToken(account);
@@ -670,7 +651,7 @@ public class AccountServices {
         return response;
     }
 
-    private void deleteOriginalFromCloudinary(String originalURL) throws IOException {
+    private void deleteProfileImageFromCloudinary(String originalURL) throws IOException {
 
         // The public id / filename is the last url parameter
         String[] urlArray = originalURL.split("/");
@@ -683,9 +664,9 @@ public class AccountServices {
 
         Cloudinary cloudinary = cloudinaryConfig.getInstance();
 
+        // Avoids deleting the default profile picture
         if (!publicId.equals("recipe_website/profile_images/default_profile_picture")) {
-            cloudinary.uploader().destroy(publicId,
-                    ObjectUtils.asMap("resource_type", "image"));
+            cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "image"));
         }
     }
 
@@ -716,8 +697,9 @@ public class AccountServices {
             return response;
         }
 
+        // Delete
         try {
-            deleteOriginalFromCloudinary(account.getProfilePicture());
+            deleteProfileImageFromCloudinary(account.getProfilePicture());
         } catch (IOException e) {
             e.printStackTrace();
         }

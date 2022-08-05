@@ -15,8 +15,7 @@ public class ForgotPasswordToken implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id", unique = true, nullable = false)
     private Account account;
 

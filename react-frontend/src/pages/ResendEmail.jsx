@@ -10,11 +10,16 @@ function ResendEmail() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [isSending, setIsSending] = useState(false);
+    const [enteredEmail, setEnteredEmail] = useState("");
+    const [isSent, setIsSent] = useState(false);
     
-    const sendEmail = (email) => {
+    const sendEmail = (formData) => {
         setIsSending(true);
+        setShowSuccess(false);
+        setShowError(false);
+        setEnteredEmail(formData.email);
 
-        AccountService.resendEmail(email).then((response) => {
+        AccountService.resendEmail(formData).then((response) => {
             console.log(response.data);
 
             setIsSending(false);
@@ -43,34 +48,49 @@ function ResendEmail() {
 
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
-            <h1>Resend Email</h1>
-            <Alert show={showError} variant="danger"> <p>{ message }</p> </Alert>
-            <Alert show={showSuccess} variant="success"> <p>{ message }</p> </Alert>
-            <Formik
-                onSubmit={sendEmail} 
-                initialValues={initialValues}
-                validationSchema={validationSchema} 
-            >
-                {({ errors, touched, isValidating }) => (
-                    <Form>
-                        <div className='mb-1'>
-                            <label className='form-label'>Email:</label>
-                            <Field name="email" type="email" className="form-control" placeholder='Type your email address...'/>
-                            {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
-                        </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Confirm Email:</label>
-                            <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
-                            {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
-                            {!errors.emailConfirmation && touched.emailConfirmation && <div className='text-success'>Email matches!</div>}
-                        </div>
-                        <div>
-                            <button type="submit" className="btn btn-primary my-3">Send email</button>
-                            { isSending && <span>loading...</span> }
-                        </div>
-                    </Form>
-                )}
-            </Formik>
+            <h2 className='my-3 text-center' >Resend Email Verification</h2>
+            
+            {
+                !isSent ? 
+                <div>
+                    <Formik
+                        onSubmit={sendEmail} 
+                        initialValues={initialValues}
+                        validationSchema={validationSchema} 
+                    >
+                        {({ errors, touched, isValidating }) => (
+                            <Form className='mx-3'>
+                                <div className='my-4 row'>
+                                    <label className='col-form-label col-sm-4'>Email:</label>
+                                    <div className='col-sm-8'>
+                                        <Field name="email" type="email" className="form-control" placeholder='Type your email address...'/>
+                                        {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
+                                    </div>
+                                </div>
+                                <div className='my-4 row'>
+                                    <label className='col-form-label col-sm-4'>Confirm Email:</label>
+                                    <div className='col-sm-8'>
+                                        <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
+                                        {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
+                                    </div>
+                                </div>
+
+                                <Alert show={showError} variant="danger"> <p className='text-center my-auto'>{ message }</p> </Alert>
+                                
+                                <div>
+                                    <button type="submit" className="btn btn-primary my-3">Send email</button>
+                                    { isSending && <span className='ms-3'>loading...</span> }
+                                </div>
+                                
+                            </Form>
+                        )}
+                    </Formik>
+                </div> :
+                <div>
+                    <p className='text-center' >New verification email has been sent to { enteredEmail } </p>
+                </div>
+            }
+            
         </div>
     );
 }

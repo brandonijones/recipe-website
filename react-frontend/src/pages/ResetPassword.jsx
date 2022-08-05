@@ -23,8 +23,9 @@ function ResetPassword() {
 
     return (
         <div>
-            <h1>Reset Password page</h1>
-            { isAuthorized ? <AuthorizedPasswordResetRequest code={code} /> : <p>Cannot reset password. Invalid URL or link is expired.</p> }
+            { isAuthorized ? 
+                <AuthorizedPasswordResetRequest code={code} /> : 
+                <h2 className='text-center my-3' >Cannot reset password. Invalid URL or link is expired.</h2> }
         </div>
     );
 }

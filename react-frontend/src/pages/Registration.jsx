@@ -76,8 +76,9 @@ function Registration() {
         AccountService.register(newAccountData).then((response) => {
             // console.log(response.data);
             setIsSending(false);
+            navigate("/registration-success");
         });
-        navigate("/registration-success");
+        
     }
 
     const showPassword = () => {
@@ -102,58 +103,76 @@ function Registration() {
 
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
-            <h2>Sign Up</h2>
+            <h2 className='text-center my-4' >Create an Account</h2>
             <Formik
                 initialValues={initialValues}
                 onSubmit={registerUser}
                 validationSchema={validationSchema}
             >
                 {({ errors, touched, isValidating }) => (
-                    <Form>
-                        <div className='mb-1'>
-                            <label className='form-label'>Name:</label>
-                            <Field name="name" className="form-control" placeholder='John Doe'/>
-                            {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
+                    <Form className='mx-3'>
+                        <hr />
+                        <div className='my-3 row'>
+                            <label className='col-form-label col-sm-4'>Name:</label>
+                            <div className='col-sm-8'>
+                                <Field name="name" className="form-control" placeholder='Enter your name...'/>
+                                {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
+                            </div>
                         </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Create a username</label>
-                            <Field name="username" validate={validateUsername} className="form-control" placeholder='Create a unique username...'/>
-                            {errors.username && touched.username && <div className='text-danger'>{errors.username}</div>}
+
+                        <div className='my-3 row'>
+                            <label className='col-form-label col-sm-4'>Username:</label>
+                            <div className='col-sm-8'>
+                                <Field name="username" validate={validateUsername} className="form-control" placeholder='Create a unique username...'/>
+                                {errors.username && touched.username && <div className='text-danger'>{errors.username}</div>}
+                            </div>
                         </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Email:</label>
-                            <Field name="email" validate={validateEmail} type="email" className="form-control" placeholder='Type your email address...'/>
-                            {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
+
+                        <div className='my-3 row'>
+                            <label className='col-form-label col-sm-4'>Email:</label>
+                            <div className='col-sm-8'>
+                                <Field name="email" validate={validateEmail} type="email" className="form-control" placeholder='Type your email address...'/>
+                                {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
+                            </div>
                         </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Confirm Email:</label>
-                            <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
-                            {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
+
+                        <div className='my-3 row'>
+                            <label className='col-form-label col-sm-4'>Confirm email:</label>
+                            <div className='col-sm-8'>
+                                <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
+                                {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
+                            </div>
                         </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Create a password</label>
-                            <Field name="password" type={passwordType} className="form-control" placeholder='Must be at least 6 characters...' />
+
+                        <div className='my-3 row'>
+                            <label className='col-form-label col-sm-4'>Create a password:</label>
+                            <div className='col-sm-8'>
+                                <Field name="password" type={passwordType} className="form-control" placeholder='Must be at least 6 characters...' />
+                                <div className="form-check mt-2">
+                                    <input className="form-check-input" type="checkbox" onClick={showPassword} />
+                                    <label className="form-check-label">Show password</label>
+                                </div>
+                                {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                            </div>
                         </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" onClick={showPassword} />
-                            <label className="form-check-label">Show password</label>
+
+                        <div className='my-3 row'>
+                            <label className='col-form-label col-sm-4'>Confirm password:</label>
+                            <div className='col-sm-8'>
+                                <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type password...'/>
+                                <div className="form-check mt-2">
+                                    <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
+                                    <label className="form-check-label">Show password</label>
+                                </div>
+                                {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                            </div>
                         </div>
-                        {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
-                        <div className='mb-1'>
-                            <label className='form-label'>Confirm password</label>
-                            <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type password...'/>
-                        </div>
-                        <div className="form-check mb-1">
-                            <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
-                            <label className="form-check-label">Show password</label>
-                        </div>
-                        {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
                         
                         <p className="mt-4" >Already have an account? <a href="/login">Log in</a></p>
                         
                         <div>
                             <button type="submit" className="btn btn-primary my-3">Register</button>
-                            { isSending && <span>loading...</span> }
+                            { isSending && <span className='ms-3'>loading...</span> }
                         </div>
                         
                     </Form>

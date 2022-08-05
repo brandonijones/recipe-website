@@ -36,6 +36,8 @@ public class RegistrationService {
     @Autowired
     private JavaMailSender mailSender;
 
+    private final int TIME_TO_EXPIRE = 15;
+
     public void register(Account account) throws UnsupportedEncodingException, MessagingException {
 
         // Creating a random verification code
@@ -69,7 +71,6 @@ public class RegistrationService {
         ResendResponse response = new ResendResponse();
         Account account = accountRepository.findByEmail(request.getEmail());
 
-
         // Account was not found with the given email
         if (account == null) {
             response.setError(true);
@@ -91,17 +92,15 @@ public class RegistrationService {
         // New verification email sent
         String randomCode = generateVerificationCode();
         LocalDateTime createdAt = LocalDateTime.now();
-        LocalDateTime expiresAt = createdAt.plusMinutes(15);
+        LocalDateTime expiresAt = createdAt.plusMinutes(TIME_TO_EXPIRE);
 
         int emailTokenId = emailToken.getId();
-//        emailToken.setCode(randomCode);
-//        emailToken.setCreatedAt(createdAt);
-//        emailToken.setExpiresAt(expiresAt);
+        emailToken.setId(emailTokenId);
+        emailToken.setConfirmedAt(null);
+        emailToken.setCode(randomCode);
+        emailToken.setCreatedAt(createdAt);
+        emailToken.setExpiresAt(expiresAt);
         account.setEnabled(false);
-        emailTokenRepository.updateCode(randomCode, emailTokenId);
-        emailTokenRepository.updateCreatedAt(createdAt, emailTokenId);
-        emailTokenRepository.updateExpiresAt(expiresAt, emailTokenId);
-//        accountRepository.disableAccount(account.getEmail());
 
         // Send email
         try {
@@ -129,7 +128,7 @@ public class RegistrationService {
         return RandomString.make(64);
     }
 
-    public void sendVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
+    private void sendVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Activate your account";
         String senderName = "Recipe Website";
         String verifyURL = "http://localhost:3000/verify?code=" + emailToken.getCode();
@@ -184,25 +183,24 @@ public class RegistrationService {
         LocalDateTime confirmedTime = LocalDateTime.now();
         LocalDateTime expirationTime = emailToken.getExpiresAt();
         emailToken.setConfirmedAt(confirmedTime);
-//        emailTokenRepository.updateConfirmedAt(confirmedTime, emailToken.getId());
 
         // Checking if token is expired
         if (confirmedTime.isAfter(expirationTime)) {
             response.setError(true);
             response.setMessage("Link has expired. Please get a new verification link.");
-//            emailTokenRepository.save(emailToken);
+            emailTokenRepository.save(emailToken);
             return response;
         }
 
         // Verification code is valid
-        emailToken.setCode(null);
-//        emailTokenRepository.deleteCode(emailToken.getId());
         account.setEnabled(true);
-//        accountRepository.enableAccount(account.getEmail());
         account.setId(account.getId());
-        emailToken.setId(emailToken.getId());
         accountRepository.save(account);
+
+        emailToken.setCode(null);
+        emailToken.setId(emailToken.getId());
         emailTokenRepository.save(emailToken);
+
         response.setError(false);
         response.setMessage("Account successfully activated!");
         return response;

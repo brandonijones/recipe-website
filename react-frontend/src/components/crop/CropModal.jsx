@@ -76,6 +76,7 @@ function CropModal(props) {
                             props.setShowCropModal(false);
                             props.setSelectedFile(null);
                             props.setImageURL(props.currentUser.profilePicture);
+                            props.cancelProfilePictureUpdate();
                         }}
                     >
                         Cancel

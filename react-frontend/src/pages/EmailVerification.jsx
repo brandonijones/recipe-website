@@ -17,6 +17,8 @@ function EmailVerification() {
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
+        
+        // User is making a new account
         if (code !== null) {
             console.log("regular code called");
             AccountService.verify(code).then((response) => {
@@ -28,7 +30,8 @@ function EmailVerification() {
                 setErrorMessage(response.data.message);
             });
         }
-
+        
+        // User is changing email
         if (changeEmailCode !== null) {
             console.log("change email code called");
             AccountService.verifyNewEmail(changeEmailCode).then((response) => {

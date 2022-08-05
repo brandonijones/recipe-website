@@ -12,6 +12,7 @@ function AuthorizedPasswordResetRequest(props) {
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
+    const [successfulReset, setSuccessfulReset] = useState(false);
     const { authState } = useContext(AuthContext);
 
     const [passwordVisibility, setPasswordVisibilty] = useState(false);
@@ -39,7 +40,8 @@ function AuthorizedPasswordResetRequest(props) {
                 setErrorMessage(response.data.message);
                 setShow(true);
             } else {
-                navigate("/");
+                setSuccessfulReset(true);
+                // navigate("/");
             }
         });
     }
@@ -76,41 +78,57 @@ function AuthorizedPasswordResetRequest(props) {
 
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
-            <Alert show={show} variant="danger"> <p>{ errorMessage }</p> </Alert>
-            <Formik
-                onSubmit={resetPassword}
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-            >
-                {({ errors, touched, isValidating }) => (
-                    <Form>
-                        <div className='mb-1'>
-                            <label className='form-label'>New password:</label>
-                            <Field name="newPassword" type={passwordType} className="form-control" placeholder='Create a new password...'/>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" onClick={showPassword} />
-                            <label className="form-check-label">Show password</label>
-                        </div>
-                        {errors.newPassword && touched.newPassword && <div className='text-danger'>{errors.newPassword}</div>}
-                        <div className='mb-1'>
-                            <label className='form-label'>Confirm new password:</label>
-                            <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type your new password...'/>
-                        </div>
-                        <div className="form-check mb-1">
-                            <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
-                            <label className="form-check-label">Show password</label>
-                        </div>
-                        {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
-                        {!errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-success'>Password matches!</div>}
-                        <div>
-                            <button type="submit" className="btn btn-primary my-3">Reset Password</button>
-                            { isSending && <span>loading...</span> }
-                        </div>
-                    </Form>
-                )}
-
-            </Formik>
+            <h2 className='text-center my-3' >Reset Password</h2>
+            {
+                !successfulReset ?  
+                <Formik
+                    onSubmit={resetPassword}
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                >
+                    {({ errors, touched, isValidating }) => (
+                        <Form className='mx-3' >
+                            <hr />
+                            <div className='my-4 row'>
+                                <label className='col-form-label col-sm-4'>New password:</label>
+                                <div className='col-sm-8'>
+                                    <Field name="newPassword" type={passwordType} className="form-control" placeholder='Create a new password...'/>
+                                    <div className='form-check mt-2'>
+                                        <input className="form-check-input" type="checkbox" onClick={showPassword} />
+                                        <label className="form-check-label">Show password</label>
+                                    </div>
+                                    {errors.newPassword && touched.newPassword && <div className='text-danger'>{errors.newPassword}</div>}
+                                </div>
+                            </div>
+                            
+                            <div className='my-4 row'>
+                                <label className='col-form-label col-sm-4'>Confirm password:</label>
+                                <div className='col-sm-8'>
+                                    <Field name="passwordConfirmation" type={passwordConfirmType} className="form-control" placeholder='Re-type your new password...'/>
+                                    <div className='form-check mt-2'>
+                                        <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
+                                        <label className="form-check-label">Show password</label>
+                                    </div>
+                                    {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                                </div>   
+                            </div>
+                            
+                            
+                            <Alert show={show} variant="danger"> <p>{ errorMessage }</p> </Alert>
+                            
+                            <div>
+                                <button type="submit" className="btn btn-primary my-3">Reset Password</button>
+                                { isSending && <span className='ms-3'>loading...</span> }
+                            </div>
+                        </Form>
+                    )}
+                </Formik> : 
+                <div className='text-center'>
+                    <p>Password successfully reset!</p>
+                    <p><a href='/login'>Log in</a></p>
+                </div>
+                
+            }
         </div>
     );
 }

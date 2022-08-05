@@ -4,7 +4,7 @@ function PasswordResetEmailSent(props) {
     
     return (
         <div>
-            <p>Password reset email has been sent to { props.email } </p>
+            <p className='text-center' >Password reset email has been sent to { props.email } </p>
         </div>
     );
 }

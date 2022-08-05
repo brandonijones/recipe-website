@@ -90,7 +90,7 @@ function ChangeEmail() {
         AccountService.findEmail({ email: value }).then((response) => {
 
             // If there was a non-null response, then an account was found with the email
-            if (response.data) {   
+            if (response.data && response.data.email !== currentEmail) {   
                 setEmailTaken(true); 
             } else {
                 setEmailTaken(false);

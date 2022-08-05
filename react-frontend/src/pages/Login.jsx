@@ -71,7 +71,8 @@ function Login() {
 
     return (
         <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
-            <h2>Log In</h2>
+            <h2 className='text-center my-3'>Log In</h2>
+            
             
             <Formik 
                 initialValues={initialValues}
@@ -79,22 +80,30 @@ function Login() {
                 validationSchema={validationSchema}
             >
                 {({ errors, touched, isValidating }) => (
-                    <Form>
-                        <div className='mb-1'>
-                            <label className='form-label'>Email or Username:</label>
-                            <Field name="user" className="form-control" placeholder='Enter your email or username...'/>
-                            {errors.user && touched.user && <div className='text-danger'>{errors.user}</div>}
+                    <Form className='mx-3'>
+                        <hr />
+                        <div className='my-4 row'>
+                            <label className='col-form-label col-sm-4'>Email or Username:</label>
+                            <div className='col-sm-8'>
+                                <Field name="user" className="form-control" placeholder='Enter your email or username...'/>
+                                {errors.user && touched.user && <div className='text-danger'>{errors.user}</div>}
+                            </div>
                         </div>
-                        <div className='mb-1'>
-                            <label className='form-label'>Password:</label>
-                            <Field name="password" type={passwordType} className="form-control" placeholder='Enter your password...' />
+
+                        <div className='my-4 row'>
+                            <label className='col-form-label col-sm-4'>Password:</label>
+                            <div className='col-sm-8'>
+                                <Field name="password" type={passwordType} className="form-control" placeholder='Enter your password...' />
+                        
+                                <div className="form-check mt-2">
+                                    <input className="form-check-input" type="checkbox" onClick={showPassword} />
+                                    <label className="form-check-label">Show password</label>
+                                </div>
+                                {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                            </div>
                         </div>
-                        <div className="form-check mb-4">
-                            <input className="form-check-input" type="checkbox" onClick={showPassword} />
-                            <label className="form-check-label">Show password</label>
-                        </div>
-                        {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
-                        <div className='container'>
+
+                        <div>
                             <p>Need to create an account? <a href="/registration">Sign up</a></p>
                             <p>Need a new email verification link? <a href="/resend-email">Send now</a> </p>
                             <p> <a href="/forgot-password">Forgot password?</a> </p>
@@ -104,7 +113,7 @@ function Login() {
 
                         <div>
                             <button type="submit" className="btn btn-primary my-3">Log In</button>
-                            { isSending && <span>loading...</span> }
+                            { isSending && <span className='ms-3'>loading...</span> }
                         </div>
                     </Form>
                 )}

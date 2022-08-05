@@ -33,6 +33,11 @@ public interface EmailTokenRepository extends JpaRepository<EmailVerificationTok
 
     @Transactional
     @Modifying
+    @Query("UPDATE EmailVerificationToken e SET e.confirmedAt = NULL WHERE e.id = ?1")
+    void deleteConfirmedAt(int id);
+
+    @Transactional
+    @Modifying
     @Query("UPDATE EmailVerificationToken e SET e.createdAt = ?1 WHERE e.id = ?2")
     void updateCreatedAt(LocalDateTime createdAt, int id);
 

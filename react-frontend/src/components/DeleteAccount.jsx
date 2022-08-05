@@ -44,6 +44,7 @@ function DeleteAccount() {
                 setErrorMessage(response.data.message);
 
             } else {
+                setShowForm(false);
                 setShowSuccessModal(true);
             }
             

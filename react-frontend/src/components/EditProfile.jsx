@@ -235,6 +235,7 @@ function EditProfile() {
                                             photoURL={imageURL} 
                                             setImageURL={setImageURL}
                                             setShowCropModal={setShowCropModal}
+                                            cancelProfilePictureUpdate={cancelProfilePictureUpdate}
                                         />
                                     </Modal.Body>  
                                 </Modal> :
@@ -345,7 +346,7 @@ function EditProfile() {
                                     setShowCancelModal(true);
                                 }}
                             >Cancel</button>
-                            { isLoading && <span>loading...</span> }
+                            { isLoading && <span className='ms-3'>loading...</span>  }
                             
                         </div>
                     </Form>
