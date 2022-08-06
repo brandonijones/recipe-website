@@ -7,6 +7,7 @@ import AccountService from './services/AccountService';
 import NavigationBar from './components/NavigationBar';
 import Home from './pages/Home';
 import Search from './pages/Search';
+import NewPost from './pages/NewPost';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
@@ -24,8 +25,9 @@ import PageNotFound from './pages/PageNotFound';
 
 /* Import styling */
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './styles/Navbar.css';
-import './styles/Settings.css';
+import './styles/navbar.css';
+import './styles/settings.css';
+import './styles/profile.css';
 
 function App() {
 
@@ -60,6 +62,7 @@ function App() {
             role: user.role
         });
       }
+      console.log(authState)
     });
   }, [authState.status, authState.username]);
 
@@ -70,6 +73,7 @@ function App() {
           <Route path='/' element={<NavigationBar />} >
             <Route index element={<Home />} />
             <Route path='/search' element={<Search />} />
+            <Route path='/new-post' element={ <NewPost /> } />
             <Route path='/login' element={<Login />} />
             <Route path='/profile/:username' element={<Profile />} />
             <Route path='/account/settings' element={<Settings />}>

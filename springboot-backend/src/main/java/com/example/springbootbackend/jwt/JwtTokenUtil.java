@@ -23,7 +23,7 @@ public class JwtTokenUtil {
 
     public String generateAccessToken(Account account) {
         return Jwts.builder()
-                .setSubject(String.format("%s, %s, %s, %s, %s, %s, %s",
+                .setSubject(String.format("%s <H~> %s <H~> %s <H~> %s <H~> %s <H~> %s <H~> %s",
                         account.getId(),
                         account.getEmail(),
                         account.getUsername(),

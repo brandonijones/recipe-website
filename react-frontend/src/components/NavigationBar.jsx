@@ -8,7 +8,7 @@ import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 
 function NavigationBar() {
 
@@ -39,19 +39,34 @@ function NavigationBar() {
 
     return (
         <div>
-            <Navbar collapseOnSelect bg='dark' variant='dark' expand='md' sticky="top">
-                <Navbar.Brand> <Link to='/'>The Open Cookbook</Link> </Navbar.Brand>
-                <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+            <Navbar  bg='dark' variant='dark' sticky="top">
+                <Navbar.Brand> 
+                    <Link to='/'>The Open Cookbook</Link>
+                </Navbar.Brand>
 
-                <div className='container-fluid' >
-                    <Navbar.Collapse id='responsive-navbar-nav' className='justify-content-end'>
-                        <Nav>
+                <div className='container-fluid justify-content-end' >
+                    <Nav className='d-flex align-items-center' >
+                        <div >
                             <Link to='/'>Home</Link>
+                        </div>
+                        <div >
                             <Link to='/search'>Search</Link>
-                            <div className='dropdown'>
-                                <FontAwesomeIcon className='profile-icon' icon={faUser} onClick={dropdownToggle} />
-                                { show && 
-                                    <div className='dropdown-content' >
+                        </div>
+                        
+                        
+                        { authState.status && 
+                            <div className='border' >
+                                <Link to='/new-post'>Post <FontAwesomeIcon icon={faCirclePlus} /> </Link>
+                            </div>
+                            
+                        }
+
+                        <div className='dropdown'>
+                            <FontAwesomeIcon className='profile-icon ms-2' icon={faUser} onClick={dropdownToggle} />
+                        
+                            {/* Profile icon dropdown content */}
+                            { show && 
+                                <div className='dropdown-content'>
                                     { authState.status ?
                                         <div>
                                             <Link to={'/profile/' + authState.username}>Profile</Link>
@@ -64,12 +79,10 @@ function NavigationBar() {
                                             <Link to='/registration'>Sign Up</Link>
                                         </div>
                                     }
-                                    </div>
-                                }
-                            </div>
-                            
-                        </Nav>
-                    </Navbar.Collapse>
+                                </div>
+                            }
+                        </div>
+                    </Nav>
                 </div>
             </Navbar>
 

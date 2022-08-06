@@ -4,7 +4,7 @@ function PageNotFound() {
 
     return (
         <div>
-            <h1>Page Not Found!</h1>
+            <h1 className='text-center my-3' >Page Not Found!</h1>
         </div>
     );
 }

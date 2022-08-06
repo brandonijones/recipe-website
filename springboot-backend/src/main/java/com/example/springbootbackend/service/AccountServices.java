@@ -98,7 +98,7 @@ public class AccountServices {
             // Password is correct and account is enabled.
             // Generating JWT with the subject as the needed account details
             String accessToken = jwtTokenUtil.generateAccessToken(account);
-            String[] subject = jwtTokenUtil.getSubject(accessToken).split(", ");
+            String[] subject = jwtTokenUtil.getSubject(accessToken).split(" <H~> ");
 
             response.setAccessToken(accessToken);
             response.setUser(subject);

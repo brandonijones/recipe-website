@@ -3,7 +3,11 @@
     padding-right: 8rem;
 }
 
-@media only screen and (max-width: 1000px) {
+.navbar-content {
+  max-width: 1000px;
+}
+
+@media only screen and (max-width: 800px) {
   .navbar {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
@@ -39,4 +43,8 @@
 .profile-icon {
   color: white;
   cursor: pointer;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 50%;
+  padding: 6px;
 }

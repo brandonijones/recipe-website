@@ -106,7 +106,7 @@ public class AccountController {
 
         if (isValid) {
             // The subject contains the values that will be stored in the authContext hook in the front end
-            String[] subject = jwtTokenUtil.getSubject(token).split(", ");
+            String[] subject = jwtTokenUtil.getSubject(token).split(" <H~> ");
             response.setUser(subject);
 
             // Double-checking that the user provided in the subject still exists

@@ -82,14 +82,6 @@ function EditProfile() {
         console.log("use effect is being called.");
     }, [imageURL]);
 
-    // const initialValues = {
-    //     name: authState.name,
-    //     username: authState.username,
-    //     profilePicture: authState.profilePicture,
-    //     bio: authState.bio,
-    //     file: null
-    // }
-
     const validationSchema = Yup.object().shape({
         name: Yup.string().max(30, "Too long! Maximum 30 characters").required("A display name is required."),
         username: Yup.string().max(30, "Too long! Maximum 30 characters").required("Username is required").matches(/^[A-Za-z0-9_]+$/, "Username cannot contain special characters or white spaces"),
@@ -247,7 +239,7 @@ function EditProfile() {
                             }
                             
                             { !showFileUpload ? 
-                                <p className='my-3 edit-profile-link ' onClick={() => setShowFileUpload(true)}>Change profile picture</p> :
+                                <p className='my-3 edit-pfp-link ' onClick={() => setShowFileUpload(true)}>Change profile picture</p> :
                                 <div className='row my-3'>
                                     <div className='col-10' >
                                         <input
