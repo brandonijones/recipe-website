@@ -214,7 +214,7 @@ function EditProfile() {
                 validationSchema={validationSchema}
             >
                 {({ errors, touched, isValidating, values, setFieldValue }) => (
-                    <Form className='mx-md-5' >
+                    <Form className='mx-md-5'>
                         <h3 className='my-3 text-center'>Edit Profile</h3>
                         <div className='my-4 text-center'> 
                             { showCropModal ? 

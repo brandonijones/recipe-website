@@ -6,9 +6,12 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Embeddable
 @Entity
-@Table(name = "accounts")
+@Table(name = "account")
 public class Account implements Serializable {
 
     @Id
@@ -36,11 +39,17 @@ public class Account implements Serializable {
     @Column(name = "profile_picture", length = 1024)
     private String profilePicture;
 
+    @Column(name = "locked")
     private boolean locked = false;
+
+    @Column(name = "enabled")
     private boolean enabled = false;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
+    private List<Recipe> recipes = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
     private EmailVerificationToken emailToken;

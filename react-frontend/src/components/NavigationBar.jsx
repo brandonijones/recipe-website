@@ -61,7 +61,7 @@ function NavigationBar() {
                             
                         }
 
-                        <div className='dropdown'>
+                        <div className='dropdown' onMouseLeave={() => setShow(false)} >
                             <FontAwesomeIcon className='profile-icon ms-2' icon={faUser} onClick={dropdownToggle} />
                         
                             {/* Profile icon dropdown content */}
