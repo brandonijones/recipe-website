@@ -144,7 +144,7 @@ public class AccountServices {
 
         if (passwordToken != null) {
             // Update the token if the email already exists in the table
-            int tokenId = passwordToken.getId();
+            Long tokenId = passwordToken.getId();
             passwordToken.setId(tokenId);
             passwordToken.setAccount(account);
             passwordToken.setCode(randomCode);
@@ -251,7 +251,7 @@ public class AccountServices {
         ChangePasswordResponse response = new ChangePasswordResponse();
 
         String code = request.getVerificationCode();
-        int userId = request.getUserId();
+        Long userId = request.getUserId();
         String newPassword = request.getNewPassword();
         String newEncodedPassword = bCryptPasswordEncoder.encode(newPassword);
 
@@ -284,7 +284,7 @@ public class AccountServices {
 
         // Resetting password through account settings
         if (userId != 0) {
-            Account account = accountRepository.findById(userId);
+            Account account = accountRepository.findByAccountId(userId);
 
             // In case id is invalid
             if (account == null) {
@@ -555,16 +555,16 @@ public class AccountServices {
             return response;
         }
 
-        int id = Integer.parseInt(userId);
+        Long id = Long.parseLong(userId);
 
         // Check to see if account exists first
-        if (accountRepository.findById(id) == null) {
+        if (accountRepository.findByAccountId(id) == null) {
             response.setError(true);
             response.setMessage("Account does not exist.");
             return response;
         }
 
-        Account account = accountRepository.findById(id);
+        Account account = accountRepository.findByAccountId(id);
         response.setError(false);
         response.setMessage("JWT is valid.");
         response.setUser(account);
@@ -584,15 +584,15 @@ public class AccountServices {
             return response;
         }
 
-        if(accountRepository.findById(updatedAccount.getId()) == null) {
+        if(accountRepository.findByAccountId(updatedAccount.getId()) == null) {
             response.setError(true);
             response.setMessage("Account could not be found.");
             return response;
         }
 
-        Account account = accountRepository.findById(updatedAccount.getId());
+        Account account = accountRepository.findByAccountId(updatedAccount.getId());
 
-        int accountId = account.getId();
+        Long accountId = account.getId();
 
         String originalProfilePicture = account.getProfilePicture();
         String originalName = account.getName();
@@ -682,8 +682,8 @@ public class AccountServices {
             return response;
         }
 
-        int accountId = request.getId();
-        Account account = accountRepository.findById(accountId);
+        Long accountId = request.getId();
+        Account account = accountRepository.findByAccountId(accountId);
 
         if (account == null) {
             response.setError(true);

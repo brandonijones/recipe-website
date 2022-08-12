@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import AccountService from '../services/AccountService';
 import { useNavigate } from 'react-router';
@@ -116,7 +116,7 @@ function Registration() {
                             <label className='col-form-label col-sm-4'>Name:</label>
                             <div className='col-sm-8'>
                                 <Field name="name" className="form-control" placeholder='Enter your name...'/>
-                                {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
+                                <ErrorMessage name='name' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 
@@ -124,7 +124,7 @@ function Registration() {
                             <label className='col-form-label col-sm-4'>Username:</label>
                             <div className='col-sm-8'>
                                 <Field name="username" validate={validateUsername} className="form-control" placeholder='Create a unique username...'/>
-                                {errors.username && touched.username && <div className='text-danger'>{errors.username}</div>}
+                                <ErrorMessage name='username' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 
@@ -132,7 +132,7 @@ function Registration() {
                             <label className='col-form-label col-sm-4'>Email:</label>
                             <div className='col-sm-8'>
                                 <Field name="email" validate={validateEmail} type="email" className="form-control" placeholder='Type your email address...'/>
-                                {errors.email && touched.email && <div className='text-danger'>{errors.email}</div>}
+                                <ErrorMessage name='email' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 
@@ -140,7 +140,7 @@ function Registration() {
                             <label className='col-form-label col-sm-4'>Confirm email:</label>
                             <div className='col-sm-8'>
                                 <Field name="emailConfirmation" type="email" className="form-control" placeholder='Re-type email address...'/>
-                                {errors.emailConfirmation && touched.emailConfirmation && <div className='text-danger'>{errors.emailConfirmation}</div>}
+                                <ErrorMessage name='emailConfirmation' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 
@@ -152,7 +152,7 @@ function Registration() {
                                     <input className="form-check-input" type="checkbox" onClick={showPassword} />
                                     <label className="form-check-label">Show password</label>
                                 </div>
-                                {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                                <ErrorMessage name='password' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 
@@ -164,7 +164,7 @@ function Registration() {
                                     <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
                                     <label className="form-check-label">Show password</label>
                                 </div>
-                                {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                                <ErrorMessage name='passwordConfirmation' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
                         

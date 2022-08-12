@@ -36,7 +36,7 @@ function CropRecipeImageModal(props) {
                     crop={crop}
                     zoom={zoom}
                     rotation={rotation}
-                    aspect={1}
+                    aspect={4/3}
                     onZoomChange={setZoom}
                     onRotationChange={setRotation}
                     onCropChange={setCrop}

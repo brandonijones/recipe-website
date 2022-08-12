@@ -28,6 +28,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/navbar.css';
 import './styles/settings.css';
 import './styles/profile.css';
+import './styles/newpost.css';
 
 function App() {
 

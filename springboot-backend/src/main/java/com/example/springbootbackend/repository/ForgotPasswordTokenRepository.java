@@ -9,13 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
-public interface ForgotPasswordTokenRepository extends JpaRepository<ForgotPasswordToken, Integer> {
+public interface ForgotPasswordTokenRepository extends JpaRepository<ForgotPasswordToken, Long> {
 
     @Query("SELECT p FROM ForgotPasswordToken p WHERE p.account.email = ?1")
     ForgotPasswordToken findByEmail(String email);
 
     @Query("SELECT p FROM ForgotPasswordToken p WHERE p.account.id = ?1")
-    ForgotPasswordToken findByAccountId(Integer accountId);
+    ForgotPasswordToken findByAccountId(Long accountId);
 
     @Query("SELECT p FROM ForgotPasswordToken p WHERE p.code = ?1")
     ForgotPasswordToken findByCode(String code);

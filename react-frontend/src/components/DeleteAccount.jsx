@@ -109,7 +109,7 @@ function DeleteAccount() {
                                     <label className='col-form-label col-sm-4'>Password:</label>
                                     <div className='col-sm-8'>
                                         <Field name="password" type="password" className="form-control" placeholder='Type your password...'/>
-                                        {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                                        <ErrorMessage name='password' render={message => <div className='text-danger'>{message}</div>} />
                                     </div>    
                                 </div>
 
@@ -118,7 +118,7 @@ function DeleteAccount() {
                                     <label className='col-form-label col-sm-4'>Confirm Password:</label>
                                     <div className='col-sm-8'>
                                         <Field name="passwordConfirmation" type="password" className="form-control" placeholder='Re-type your password...'/>
-                                        {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                                        <ErrorMessage name='passwordConfirmation' render={message => <div className='text-danger'>{message}</div>} />
                                     </div>    
                                 </div>
 

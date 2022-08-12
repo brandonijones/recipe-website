@@ -1,5 +1,5 @@
 import { React, useContext, useState, useEffect } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import AccountService from '../services/AccountService';
 import * as Yup from 'yup';
 import { AuthContext } from '../helpers/AuthContext';
@@ -143,14 +143,14 @@ function ChangeEmail() {
                             <label className='col-form-label col-sm-4'>New email address:</label>
                             <div className='col-sm-8'>
                                 <Field validate={validateEmail}  name='newEmail' className='form-control' />
-                                { errors.newEmail && touched.newEmail && <div className='text-danger'>{errors.newEmail}</div> }
+                                <ErrorMessage name='newEmail' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
                         <div className='my-2 row'>
                             <label className='col-form-label col-sm-4'>Confirm email:</label>
                             <div className='col-sm-8'>
                                 <Field name='newEmailConfirmation' className='form-control' />
-                                { errors.newEmailConfirmation && touched.newEmailConfirmation && <div className='text-danger'>{errors.newEmailConfirmation}</div> }
+                                <ErrorMessage name='newEmailConfirmation' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
                         <div className='my-3' >

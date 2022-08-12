@@ -1,5 +1,5 @@
 import { React, useContext, useState, useEffect } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import AccountService from '../services/AccountService';
 import * as Yup from 'yup';
 import { AuthContext } from '../helpers/AuthContext';
@@ -109,7 +109,7 @@ function ChangePassword() {
                                     <input className="form-check-input" type="checkbox" onClick={showPassword} />
                                     <label className="form-check-label">Show password</label>
                                 </div>
-                                {errors.oldPassword && touched.oldPassword && <div className='text-danger'>{errors.oldPassword}</div>}
+                                <ErrorMessage name='oldPassword' render={message => <div className='text-danger'>{message}</div>} />
                             </div>    
                         </div>
 
@@ -122,7 +122,7 @@ function ChangePassword() {
                                     <input className="form-check-input" type="checkbox" onClick={showNewPassword} />
                                     <label className="form-check-label">Show password</label>
                                 </div>
-                                {errors.newPassword && touched.newPassword && <div className='text-danger'>{errors.newPassword}</div>}
+                                <ErrorMessage name='newPassword' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
                         
@@ -135,7 +135,7 @@ function ChangePassword() {
                                     <input className="form-check-input" type="checkbox" onClick={showNewPasswordConfirmation} />
                                     <label className="form-check-label">Show password</label>
                                 </div>
-                                {errors.newPasswordConfirmation && touched.newPasswordConfirmation && <div className='text-danger'>{errors.newPasswordConfirmation}</div>}
+                                <ErrorMessage name='newPasswordConfirmation' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 

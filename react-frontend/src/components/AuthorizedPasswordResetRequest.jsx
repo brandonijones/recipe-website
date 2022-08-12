@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import AccountService from "../services/AccountService";
 import { Alert } from "react-bootstrap";
@@ -97,7 +97,7 @@ function AuthorizedPasswordResetRequest(props) {
                                         <input className="form-check-input" type="checkbox" onClick={showPassword} />
                                         <label className="form-check-label">Show password</label>
                                     </div>
-                                    {errors.newPassword && touched.newPassword && <div className='text-danger'>{errors.newPassword}</div>}
+                                    <ErrorMessage name='newPassword' render={message => <div className='text-danger'>{message}</div>} />
                                 </div>
                             </div>
                             
@@ -109,7 +109,7 @@ function AuthorizedPasswordResetRequest(props) {
                                         <input className="form-check-input" type="checkbox" onClick={showPasswordConfirmation} />
                                         <label className="form-check-label">Show password</label>
                                     </div>
-                                    {errors.passwordConfirmation && touched.passwordConfirmation && <div className='text-danger'>{errors.passwordConfirmation}</div>}
+                                    <ErrorMessage name='passwordConfirmation' render={message => <div className='text-danger'>{message}</div>} />
                                 </div>   
                             </div>
                             

@@ -12,7 +12,7 @@ public class Recipe implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -36,6 +36,9 @@ public class Recipe implements Serializable {
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "recipe")
     private List<Direction> directions = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "recipe")
+    private List<TaggedRecipe> taggedRecipes = new ArrayList<>();
+
     public Recipe() { }
 
     public Recipe(String title, String description, String imageURL, Account account) {
@@ -45,11 +48,11 @@ public class Recipe implements Serializable {
         this.account = account;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -107,5 +110,13 @@ public class Recipe implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<TaggedRecipe> getTaggedRecipes() {
+        return taggedRecipes;
+    }
+
+    public void setTaggedRecipes(List<TaggedRecipe> taggedRecipes) {
+        this.taggedRecipes = taggedRecipes;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.springbootbackend.model;
 
+import com.example.springbootbackend.model.compositekeys.DirectionID;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -8,7 +10,7 @@ import java.io.Serializable;
 public class Direction implements Serializable {
 
     @EmbeddedId
-    private CompositeKey id;
+    private DirectionID directionPK;
 
     @MapsId("recipeId")
     @JoinColumn(name = "recipe_id", referencedColumnName = "id")
@@ -20,17 +22,17 @@ public class Direction implements Serializable {
 
     public Direction() { }
 
-    public Direction(CompositeKey id, String description) {
-        this.id = id;
+    public Direction(DirectionID directionPK, String description) {
+        this.directionPK = directionPK;
         this.description = description;
     }
 
-    public CompositeKey getId() {
-        return id;
+    public DirectionID getDirectionPK() {
+        return directionPK;
     }
 
-    public void setId(CompositeKey id) {
-        this.id = id;
+    public void setDirectionPK(DirectionID directionPK) {
+        this.directionPK = directionPK;
     }
 
     public Recipe getRecipe() {
@@ -48,4 +50,6 @@ public class Direction implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
 }

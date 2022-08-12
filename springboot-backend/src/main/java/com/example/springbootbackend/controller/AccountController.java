@@ -110,8 +110,8 @@ public class AccountController {
             response.setUser(subject);
 
             // Double-checking that the user provided in the subject still exists
-            int currentUserId = response.getUser().getId();
-            if (accountRepository.findById(currentUserId) == null) {
+            Long currentUserId = response.getUser().getId();
+            if (accountRepository.findByAccountId(currentUserId) == null) {
                 response.setMessage("Account does not exist.");
                 response.setError(true);
                 return response;

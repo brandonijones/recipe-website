@@ -4,32 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AccountDeleteRequest {
 
-//    @JsonProperty("data")
-//    AccountInfo data;
-
-    private int id;
+    private Long id;
     private String password;
 
     public AccountDeleteRequest() { }
 
-//    public AccountDeleteRequest(AccountInfo data) {
-//        this.data = data;
-//    }
-//
-//    public AccountInfo getData() {
-//        return data;
-//    }
-//
-//    public void setData(AccountInfo data) {
-//        this.data = data;
-//    }
-
-
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

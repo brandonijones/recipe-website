@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class AccountInfo {
 
-    private int id;
+    private Long id;
     private String username;
     private String name;
     private String role;
@@ -15,18 +15,18 @@ public class AccountInfo {
 
     public AccountInfo() { }
 
-    public AccountInfo(int id, String username, String name, String role) {
+    public AccountInfo(Long id, String username, String name, String role) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.role = role;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

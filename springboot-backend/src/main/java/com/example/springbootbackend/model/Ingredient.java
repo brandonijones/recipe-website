@@ -1,5 +1,7 @@
 package com.example.springbootbackend.model;
 
+import com.example.springbootbackend.model.compositekeys.IngredientID;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -8,7 +10,7 @@ import java.io.Serializable;
 public class Ingredient implements Serializable {
 
     @EmbeddedId
-    private CompositeKey key;
+    private IngredientID ingredientPK;
 
     @MapsId("recipeId")
     @JoinColumn(name = "recipe_id", referencedColumnName = "id")
@@ -20,25 +22,17 @@ public class Ingredient implements Serializable {
 
     public Ingredient() { }
 
-    public Ingredient(CompositeKey key, String item) {
-        this.key = key;
+    public Ingredient(IngredientID ingredientPK, String item) {
+        this.ingredientPK = ingredientPK;
         this.item = item;
     }
 
-    public CompositeKey getKey() {
-        return key;
+    public IngredientID getIngredientPK() {
+        return ingredientPK;
     }
 
-    public void setKey(CompositeKey key) {
-        this.key = key;
-    }
-
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(Recipe recipe) {
-        this.recipe = recipe;
+    public void setIngredientPK(IngredientID ingredientPK) {
+        this.ingredientPK = ingredientPK;
     }
 
     public String getItem() {
@@ -47,5 +41,13 @@ public class Ingredient implements Serializable {
 
     public void setItem(String item) {
         this.item = item;
+    }
+
+    public Recipe getRecipe() {
+        return recipe;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
     }
 }

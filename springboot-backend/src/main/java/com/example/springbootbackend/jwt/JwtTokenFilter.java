@@ -67,9 +67,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private Account getAccountDetails(String token) {
         Account accountDetails = new Account();
-        String[] jwtSubject = jwtTokenUtil.getSubject(token).split(", ");
+        String[] jwtSubject = jwtTokenUtil.getSubject(token).split(" <H~> ");
 
-        accountDetails.setId(Integer.parseInt(jwtSubject[0]));
+        accountDetails.setId(Long.parseLong(jwtSubject[0]));
         accountDetails.setUsername(jwtSubject[1]);
         accountDetails.setName(jwtSubject[2]);
         accountDetails.setRole(jwtSubject[3]);

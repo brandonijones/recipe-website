@@ -18,7 +18,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByEmail(String email);
 
     @Query("SELECT a FROM Account a WHERE a.id = ?1")
-    Account findById(int id);
+    Account findByAccountId(Long id);
 
     @Transactional
     @Modifying

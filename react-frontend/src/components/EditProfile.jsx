@@ -1,5 +1,5 @@
-import { React, useCallback, useEffect, useState, useContext } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { React, useEffect, useState, useContext } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import AccountService from '../services/AccountService';
 import axios from "axios";
@@ -260,7 +260,7 @@ function EditProfile() {
                                         <span className='me-2'>Cancel</span>
                                         <FontAwesomeIcon icon={ faCircleXmark } />
                                     </div>
-                                    {errors.file && <div className='text-danger'>{errors.file}</div>}
+                                    <ErrorMessage name='file' render={message => <div className='text-danger'>{message}</div>} />
                                     <div className='my-3 text-center' >
                                         <p className='text-danger remove-pfp-link' onClick={resetProfilePicture}>Remove profile picture</p>
                                     </div>
@@ -282,7 +282,7 @@ function EditProfile() {
                                         });
                                     }}
                                 />
-                                {errors.name && touched.name && <div className='text-danger'>{errors.name}</div>}
+                                <ErrorMessage name='name' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                             
                         </div>
@@ -302,7 +302,7 @@ function EditProfile() {
                                         });
                                     }}
                                 />
-                                {errors.username && touched.username && <div className='text-danger'>{errors.username}</div>}
+                                <ErrorMessage name='username' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                             
                         </div>
@@ -324,7 +324,7 @@ function EditProfile() {
                                     }}
                                     placeholder='Say something about yourself (250 characters max).'/>
                                 <p className={(charactersLeft < 0) && 'text-danger'} >{charactersLeft} characters left</p>
-                                {errors.bio && touched.bio && <div className='text-danger'>{errors.bio}</div>}
+                                <ErrorMessage name='bio' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
                         <div className='my-3' >

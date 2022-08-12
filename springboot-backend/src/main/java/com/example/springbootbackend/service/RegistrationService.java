@@ -94,7 +94,7 @@ public class RegistrationService {
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(TIME_TO_EXPIRE);
 
-        int emailTokenId = emailToken.getId();
+        Long emailTokenId = emailToken.getId();
         emailToken.setId(emailTokenId);
         emailToken.setConfirmedAt(null);
         emailToken.setCode(randomCode);

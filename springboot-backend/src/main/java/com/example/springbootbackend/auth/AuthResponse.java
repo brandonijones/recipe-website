@@ -54,7 +54,7 @@ public class AuthResponse {
     // Setting user information based on jwt subject
     // Needed for the authState hook on the frontend
     public void setUser(String[] subject) {
-        user.setId(Integer.parseInt(subject[0]));
+        user.setId(Long.parseLong(subject[0]));
         user.setEmail(subject[1]);
         user.setUsername(subject[2]);
         user.setName(subject[3]);

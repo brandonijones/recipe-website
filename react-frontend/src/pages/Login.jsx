@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../helpers/AuthContext';
 import AccountService from '../services/AccountService';
@@ -86,7 +86,7 @@ function Login() {
                             <label className='col-form-label col-sm-4'>Email or Username:</label>
                             <div className='col-sm-8'>
                                 <Field name="user" className="form-control" placeholder='Enter your email or username...'/>
-                                {errors.user && touched.user && <div className='text-danger'>{errors.user}</div>}
+                                <ErrorMessage name='user' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 
@@ -99,7 +99,7 @@ function Login() {
                                     <input className="form-check-input" type="checkbox" onClick={showPassword} />
                                     <label className="form-check-label">Show password</label>
                                 </div>
-                                {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
+                                <ErrorMessage name='password' render={message => <div className='text-danger'>{message}</div>} />
                             </div>
                         </div>
 

@@ -9,14 +9,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Embeddable
 @Entity
 @Table(name = "account")
 public class Account implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 30)
     private String name;
@@ -68,11 +67,11 @@ public class Account implements Serializable {
         this.role = role;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
