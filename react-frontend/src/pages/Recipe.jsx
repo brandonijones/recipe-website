@@ -22,6 +22,8 @@ function Recipe() {
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [postedAt, setPostedAt] = useState(null);
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     useEffect(() => {
 
@@ -31,9 +33,13 @@ function Recipe() {
         RecipeService.findRecipeById(recipeId).then((response) => {
             console.log(response.data);
             if (response.data) {
-                setRecipe(response.data);
+                let recipeValues = response.data;
+                let recipeCreatedAt = new Date(recipeValues.createdAt);
+                console.log(recipeCreatedAt);
+                setPostedAt(recipeCreatedAt);
+                setRecipe(recipeValues);
 
-                checkUsername(response.data);
+                checkUsername(recipeValues);
 
             } else {
                 navigate("404");
@@ -87,14 +93,14 @@ function Recipe() {
         <div>
             { isLoading ? 
                 <Loading /> : 
-                <div className='my-5 container border' style={{"maxWidth": "45rem"}}>
+                <div className='my-5 container border full-recipe-card' style={{"maxWidth": "45rem"}}>
                     <div className='m-4'>
                         <div className='text-center'>
-                            <img className='img-fluid' src={recipe.imageURL} alt={recipe.title} />
+                            <img className='img-fluid recipe-image' src={recipe.imageURL} alt={recipe.title} />
                         </div>
 
                         <h2 className='mt-3' >{recipe.title}</h2>
-                        <p>posted by <a href={`/profile/${username}`}>{username}</a></p>
+                        <p>posted by <a href={`/profile/${username}`}>{username}</a> on {`${months[postedAt.getMonth()]} ${postedAt.getDate()}, ${postedAt.getFullYear()}`}</p>
                         <p> {recipe.description} </p>
 
                         <h4>Ingredients</h4>
@@ -116,7 +122,7 @@ function Recipe() {
                         </ol>
                     </div>
                     { tags.length > 0 &&
-                        <div className='mx-4'>
+                        <div className='mx-4 my-3'>
                             <hr />
                             <span> <strong>Tags: </strong> </span>
                             {tags.map((tag, index) => {
@@ -127,7 +133,7 @@ function Recipe() {
                         </div>
                     }
                     { authState.username === username && 
-                        <div className='mx-4'>
+                        <div className='mx-4 my-3'>
                             <hr />
                             <p className='text-center' style={{"cursor": "pointer"}} onClick={() => setShowDeleteModal(true)} >Delete recipe? <FontAwesomeIcon icon={faTrash} /></p> 
                         </div>

@@ -30,6 +30,7 @@ import './styles/navbar.css';
 import './styles/settings.css';
 import './styles/profile.css';
 import './styles/newpost.css';
+import './styles/recipe.css';
 
 function App() {
 

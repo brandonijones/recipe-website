@@ -11,8 +11,11 @@ import java.util.List;
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
-    @Query("SELECT r FROM Recipe r WHERE r.account.id = ?1")
+    @Query("SELECT r FROM Recipe r WHERE r.account.id = ?1 ORDER BY r.createdAt DESC")
     List<Recipe> findRecipesByAccountId(Long id);
+
+    @Query("SELECT r FROM Recipe r ORDER BY r.createdAt")
+    List<Recipe> getRecipesOrderByDate();
 
     @Query("SELECT r FROM Recipe r WHERE r.account.id = ?1 AND r.createdAt = ?2")
     Recipe findRecipeByAccountIdAndTime(Long id, LocalDateTime createdAt);

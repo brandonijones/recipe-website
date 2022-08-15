@@ -43,11 +43,11 @@ function ProfileInfo(props) {
                         <h5> @{currentProfile.username} </h5>
                         
                         { formattedBio !== null ? 
-                            formattedBio.map((line) => {
+                            formattedBio.map((line, index) => {
                                 if (line === '') {
-                                    return <br />
+                                    return <br key={index} />
                                 } else {
-                                    return <p className='mb-0'>{line}</p>
+                                    return <p className='mb-0' key={index}>{line}</p>
                                 }   
                             }) :
                             <p>{ currentProfile.bio }</p>

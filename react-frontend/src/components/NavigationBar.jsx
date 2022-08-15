@@ -62,7 +62,15 @@ function NavigationBar() {
                         }
 
                         <div className='dropdown' onMouseLeave={() => setShow(false)} >
-                            <FontAwesomeIcon className='profile-icon ms-2' icon={faUser} onClick={dropdownToggle} />
+
+                            {authState.status ? 
+                                <img className='profile-image-icon ms-2' src={authState.profilePicture} onClick={dropdownToggle} alt="Profile" /> :
+                                <div >
+                                    <FontAwesomeIcon className='profile-icon ms-2' icon={faUser} onClick={dropdownToggle} />
+                                </div>
+                                
+                            }
+                            
                         
                             {/* Profile icon dropdown content */}
                             { show && 

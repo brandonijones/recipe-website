@@ -24,7 +24,7 @@ function ProfileRecipes(props) {
         <div>
             <h3 className='text-center my-3' >Recipes</h3>
             <p className='text-center'>({recipes.length} total)</p>
-            <div className='row'>
+            <div className='row g-3'>
                 {recipes.length > 0 ? 
                     <>
                         {recipes.map((recipe, index) => {
