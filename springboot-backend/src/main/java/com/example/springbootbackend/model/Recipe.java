@@ -28,6 +28,9 @@ public class Recipe implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "avg_rating")
+    private Double averageRating;
+
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
@@ -40,6 +43,9 @@ public class Recipe implements Serializable {
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "recipe")
     private List<TaggedRecipe> taggedRecipes = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "recipe")
+    private List<Review> reviews = new ArrayList<>();
 
     public Recipe() { }
 
@@ -96,5 +102,13 @@ public class Recipe implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
     }
 }

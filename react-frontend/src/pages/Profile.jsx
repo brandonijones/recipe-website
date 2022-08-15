@@ -1,19 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../components/Loading';
-import { AuthContext } from '../helpers/AuthContext';
 import AccountService from '../services/AccountService';
 import ProfileInfo from '../components/ProfileInfo';
-import ProfileStats from '../components/ProfileStats';
 import ProfileRecipes from '../components/ProfileRecipes';
 
 function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
-    const { authState } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(true);
     const [currentProfile, setCurrentProfile] = useState({});
-    const [recipes, setRecipes] = useState([]);
     
 
     useEffect(() => {

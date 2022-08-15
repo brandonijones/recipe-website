@@ -31,6 +31,7 @@ import './styles/settings.css';
 import './styles/profile.css';
 import './styles/newpost.css';
 import './styles/recipe.css';
+import './styles/review.css';
 
 function App() {
 

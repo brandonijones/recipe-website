@@ -4,11 +4,13 @@ import RecipeService from '../services/RecipeService';
 import AccountService from '../services/AccountService';
 import Loading from '../components/Loading';
 import { AuthContext } from '../helpers/AuthContext';
+import Reviews from '../components/Reviews';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import Modal from 'react-bootstrap/Modal';
+import Rating from '@mui/material/Rating';
 
 function Recipe() {
     
@@ -93,52 +95,69 @@ function Recipe() {
         <div>
             { isLoading ? 
                 <Loading /> : 
-                <div className='my-5 container border full-recipe-card' style={{"maxWidth": "45rem"}}>
-                    <div className='m-4'>
-                        <div className='text-center'>
-                            <img className='img-fluid recipe-image' src={recipe.imageURL} alt={recipe.title} />
+                <>
+                    <div className='my-5 container border full-recipe-card'>
+                        <div className='m-4'>
+                            <div className='text-center'>
+                                <img className='img-fluid recipe-image' src={recipe.imageURL} alt={recipe.title} />
+                            </div>
+
+                            <h2 className='mt-3' >{recipe.title}</h2>
+                            <div className='d-flex align-items-center mb-2'>
+                                <Rating 
+                                    name='read-only'
+                                    value={recipe.averageRating}
+                                    precision={0.1}
+                                    readOnly
+                                />
+                                { recipe.averageRating !== null ?
+                                    <span className='ms-2'>({`${recipe.averageRating}/5`})</span> :
+                                    <span className='ms-2'>(no reviews yet)</span>
+                                }
+                                
+                            </div>
+                            
+                            <p>posted by <a href={`/profile/${username}`}>{username}</a> on {`${months[postedAt.getMonth()]} ${postedAt.getDate()}, ${postedAt.getFullYear()}`}</p>
+                            <p> {recipe.description} </p>
+
+                            <h4>Ingredients</h4>
+                            <ul>
+                                {ingredients.map((ingredient, index) => {
+                                    return (
+                                        <li key={index} >{ingredient.item}</li>
+                                    );
+                                })}
+                            </ul>
+
+                            <h4>Directions</h4>
+                            <ol>
+                                {directions.map((direction, index) => {
+                                    return (
+                                        <li key={index} >{direction.description}</li>
+                                    );
+                                })}
+                            </ol>
                         </div>
-
-                        <h2 className='mt-3' >{recipe.title}</h2>
-                        <p>posted by <a href={`/profile/${username}`}>{username}</a> on {`${months[postedAt.getMonth()]} ${postedAt.getDate()}, ${postedAt.getFullYear()}`}</p>
-                        <p> {recipe.description} </p>
-
-                        <h4>Ingredients</h4>
-                        <ul>
-                            {ingredients.map((ingredient, index) => {
-                                return (
-                                    <li key={index} >{ingredient.item}</li>
-                                );
-                            })}
-                        </ul>
-
-                        <h4>Directions</h4>
-                        <ol>
-                            {directions.map((direction, index) => {
-                                return (
-                                    <li key={index} >{direction.description}</li>
-                                );
-                            })}
-                        </ol>
+                        { tags.length > 0 &&
+                            <div className='mx-4 my-3'>
+                                <hr />
+                                <span> <strong>Tags: </strong> </span>
+                                {tags.map((tag, index) => {
+                                    return (
+                                        <span className='border p-2 mx-1' key={index} >{tag.name}</span>
+                                    );
+                                })}
+                            </div>
+                        }
+                        { authState.username === username && 
+                            <div className='mx-4 my-3'>
+                                <hr />
+                                <p className='text-center' style={{"cursor": "pointer"}} onClick={() => setShowDeleteModal(true)} >Delete recipe? <FontAwesomeIcon icon={faTrash} /></p> 
+                            </div>
+                        }
                     </div>
-                    { tags.length > 0 &&
-                        <div className='mx-4 my-3'>
-                            <hr />
-                            <span> <strong>Tags: </strong> </span>
-                            {tags.map((tag, index) => {
-                                return (
-                                    <span className='border p-2 mx-1' key={index} >{tag.name}</span>
-                                );
-                            })}
-                        </div>
-                    }
-                    { authState.username === username && 
-                        <div className='mx-4 my-3'>
-                            <hr />
-                            <p className='text-center' style={{"cursor": "pointer"}} onClick={() => setShowDeleteModal(true)} >Delete recipe? <FontAwesomeIcon icon={faTrash} /></p> 
-                        </div>
-                    }
-                </div>
+                    <Reviews recipeId={recipeId} username={username}/>
+                </>
             }
 
             <Modal 

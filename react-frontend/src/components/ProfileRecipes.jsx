@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import RecipeService from '../services/RecipeService';
+import Rating from '@mui/material/Rating';
 
 function ProfileRecipes(props) {
 
@@ -33,6 +34,18 @@ function ProfileRecipes(props) {
                                     <div className='card recipe-card h-100' onClick={() => goToRecipe(profileUsername, recipe.id)}>
                                         <img src={recipe.imageURL} alt={recipe.title} className='card-img-top' />
                                         <div className='card-body'>
+                                            <div className='d-flex align-items-center mb-2'>
+                                                <Rating 
+                                                    name='read-only'
+                                                    value={recipe.averageRating}
+                                                    precision={0.1}
+                                                    readOnly
+                                                />
+                                                { recipe.averageRating !== null ?
+                                                    <span className='ms-2'>({`${recipe.averageRating}/5`})</span> :
+                                                    <span className='ms-2'>(no reviews yet)</span>
+                                                }
+                                            </div>
                                             <h5 className='card-title'>{recipe.title}</h5>
                                             <p>{recipe.description.substring(0, 50) + "..."}</p>
                                         </div>

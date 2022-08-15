@@ -1,0 +1,17 @@
+
+/* Overriding a visual issue with star increments */
+.css-dqr9h-MuiRating-label {
+    display: flex !important;
+}
+
+.delete-review {
+    cursor: pointer;
+}
+
+.review-date {
+    color: #9e9e9e;
+}
+
+.reviewer {
+    cursor: pointer;
+}

@@ -50,6 +50,9 @@ public class Account implements Serializable {
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
     private List<Recipe> recipes = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
+    private List<Review> reviews = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
     private EmailVerificationToken emailToken;
 
@@ -163,20 +166,4 @@ public class Account implements Serializable {
                 "bio: " + getBio() + "\n" +
                 "role: " + getRole() + "\n";
     }
-
-//    public EmailVerificationToken getEmailToken() {
-//        return emailToken;
-//    }
-//
-//    public void setEmailToken(EmailVerificationToken emailToken) {
-//        this.emailToken = emailToken;
-//    }
-//
-//    public ForgotPasswordToken getPasswordToken() {
-//        return passwordToken;
-//    }
-//
-//    public void setPasswordToken(ForgotPasswordToken passwordToken) {
-//        this.passwordToken = passwordToken;
-//    }
 }
