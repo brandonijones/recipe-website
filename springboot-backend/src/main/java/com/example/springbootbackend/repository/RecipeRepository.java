@@ -16,4 +16,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     @Query("SELECT r FROM Recipe r WHERE r.account.id = ?1 AND r.createdAt = ?2")
     Recipe findRecipeByAccountIdAndTime(Long id, LocalDateTime createdAt);
+
+    @Query("SELECT r FROM Recipe r WHERE r.id = ?1")
+    Recipe findRecipeById(Long id);
 }

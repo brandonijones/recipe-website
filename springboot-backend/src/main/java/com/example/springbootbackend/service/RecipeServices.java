@@ -1,5 +1,7 @@
 package com.example.springbootbackend.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.springbootbackend.auth.RecipeUploadRequest;
 import com.example.springbootbackend.auth.RecipeUploadResponse;
 import com.example.springbootbackend.cloudinary.config.CloudinaryConfig;
@@ -10,8 +12,11 @@ import com.example.springbootbackend.model.compositekeys.IngredientID;
 import com.example.springbootbackend.model.compositekeys.TaggedRecipeID;
 import com.example.springbootbackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -43,10 +48,10 @@ public class RecipeServices {
     @Autowired
     private CloudinaryConfig cloudinaryConfig;
 
+    private final String DEFAULT_RECIPE_IMAGE_URL = "https://res.cloudinary.com/dxgfugkbb/image/upload/v1660331856/recipe_website/recipe_images/default_recipe_image.png";
+
     public RecipeUploadResponse uploadRecipe(String header, RecipeUploadRequest request) {
         RecipeUploadResponse response = new RecipeUploadResponse();
-
-//        request.printRecipeRequest();
 
         String token = header.split(" ")[1];
         boolean isValid = jwtTokenUtil.validateAccessToken(token);
@@ -206,5 +211,88 @@ public class RecipeServices {
         response.setError(false);
         response.setMessage("Recipe successfully uploaded!");
         return response;
+    }
+
+    public List<Recipe> findRecipesByAccountId(String accountId) {
+        Long id = Long.parseLong(accountId);
+        List<Recipe> accountRecipes = recipeRepository.findRecipesByAccountId(id);
+
+        return accountRecipes;
+    }
+
+    public Recipe findRecipeById(String recipeId) {
+        Long id = Long.parseLong(recipeId);
+        return recipeRepository.findRecipeById(id);
+    }
+
+    public List<Ingredient> findIngredients(String recipeId) {
+        Long id = Long.parseLong(recipeId);
+        return ingredientRepository.findByRecipeId(id);
+    }
+
+    public List<Direction> findDirections(String recipeId) {
+        Long id = Long.parseLong(recipeId);
+        return directionRepository.findByRecipeId(id);
+    }
+
+    public List<Tag> findTags(String recipeId) {
+        Long id = Long.parseLong(recipeId);
+        List<TaggedRecipe> recipeTags = taggedRecipeRepository.findTagsByRecipeId(id);
+        List<Tag> tagsList = new ArrayList<>();
+
+        for (TaggedRecipe taggedRecipe : recipeTags) {
+            tagsList.add(taggedRecipe.getTag());
+        }
+
+        return tagsList;
+    }
+
+    public ResponseEntity<String> deleteRecipe(String header, String recipeId) {
+
+        String token = header.split(" ")[1];
+        boolean isValid = jwtTokenUtil.validateAccessToken(token);
+
+        if (!isValid) {
+            return new ResponseEntity<>("JWT is invalid", HttpStatus.BAD_REQUEST);
+        }
+
+        Long id = Long.parseLong(recipeId);
+        Recipe recipe = recipeRepository.findRecipeById(id);
+
+        if (recipe == null) {
+            return new ResponseEntity<>("Deletion of recipe failed", HttpStatus.NOT_FOUND);
+        }
+
+        if (!recipe.getImageURL().equals(DEFAULT_RECIPE_IMAGE_URL)) {
+            try {
+                deleteRecipeImageFromCloudinary(recipe.getImageURL());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseEntity<>("Recipe image failed to delete from Cloudinary", HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        recipeRepository.delete(recipe);
+
+        return new ResponseEntity<>("Successfully deleted recipe", HttpStatus.OK);
+    }
+
+    private void deleteRecipeImageFromCloudinary(String recipeImage) throws IOException {
+
+        // The public id / filename is the last url parameter
+        String[] urlArray = recipeImage.split("/");
+        int lastIndex = urlArray.length - 1;
+        String fileName = urlArray[lastIndex];
+
+        // Separate the public id from the file extension
+        String[] fileArray = fileName.split("\\.");
+        String publicId = "recipe_website/recipe_images/" + fileArray[0];
+
+        Cloudinary cloudinary = cloudinaryConfig.getInstance();
+
+        // Avoids deleting the default profile picture
+        if (!publicId.equals("recipe_website/recipe_images/default_recipe_image")) {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "image"));
+        }
     }
 }

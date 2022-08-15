@@ -40,12 +40,4 @@ public class Tag implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
-    public List<TaggedRecipe> getTaggedRecipes() {
-        return taggedRecipes;
-    }
-
-    public void setTaggedRecipes(List<TaggedRecipe> taggedRecipes) {
-        this.taggedRecipes = taggedRecipes;
-    }
 }

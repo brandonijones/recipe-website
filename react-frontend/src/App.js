@@ -10,6 +10,7 @@ import Search from './pages/Search';
 import NewPost from './pages/NewPost';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import Recipe from './pages/Recipe';
 import Settings from './pages/Settings';
 import EditProfile from './components/EditProfile';
 import ChangeEmail from './components/ChangeEmail';
@@ -84,6 +85,7 @@ function App() {
               <Route path='change-password' element={<ChangePassword />} />
               <Route path='delete-account' element={<DeleteAccount /> } />
             </Route>
+            <Route path='/recipe/:username/:recipeId' element={<Recipe />} />
             <Route path='/forgot-password' element={ <ForgotPassword /> } />
             <Route path='/reset-password' element={ <ResetPassword /> } />
             <Route path='/registration' element={<Registration />} />

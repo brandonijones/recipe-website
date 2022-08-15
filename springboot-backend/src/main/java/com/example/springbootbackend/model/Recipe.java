@@ -1,5 +1,7 @@
 package com.example.springbootbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -88,35 +90,11 @@ public class Recipe implements Serializable {
         this.account = account;
     }
 
-    public List<Ingredient> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
-
-    public List<Direction> getDirections() {
-        return directions;
-    }
-
-    public void setDirections(List<Direction> directions) {
-        this.directions = directions;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public List<TaggedRecipe> getTaggedRecipes() {
-        return taggedRecipes;
-    }
-
-    public void setTaggedRecipes(List<TaggedRecipe> taggedRecipes) {
-        this.taggedRecipes = taggedRecipes;
     }
 }
