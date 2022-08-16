@@ -1,0 +1,13 @@
+.search-bar {
+    max-width: 40rem;
+}
+
+.profile-card {
+    cursor: pointer;
+    width: 12rem;
+}
+
+.profile-card-img {
+    border-radius: 50%;
+    width: 100px;
+}

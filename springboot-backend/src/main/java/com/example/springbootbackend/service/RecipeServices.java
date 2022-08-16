@@ -295,4 +295,8 @@ public class RecipeServices {
             cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "image"));
         }
     }
+
+    public List<Recipe> findRecipesByQuery(String query) {
+        return recipeRepository.findRecipesByQuery(query);
+    }
 }

@@ -23,6 +23,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.cloudinary.*;
 
@@ -709,5 +710,9 @@ public class AccountServices {
         response.setError(false);
         response.setMessage("Account successfully deleted!");
         return response;
+    }
+
+    public List<Account> findAccountsByQuery(String query) {
+        return accountRepository.findAccountsByQuery(query);
     }
 }

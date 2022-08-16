@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -19,6 +20,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT a FROM Account a WHERE a.id = ?1")
     Account findByAccountId(Long id);
+
+    @Query("SELECT DISTINCT a " +
+            "FROM Account a " +
+            "WHERE a.username LIKE %?1% " +
+            "OR a.name LIKE %?1% " +
+            "ORDER BY a.name, a.username")
+    List<Account> findAccountsByQuery(String query);
 
     @Transactional
     @Modifying
