@@ -9,6 +9,8 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import SearchService from '../services/SearchService';
 import Loading from '../components/Loading';
 
+import Landing from '../images/recipe-website-landing-page.png';
+
 function Home() {
     const [query, setQuery] = useState("");
     const [recipeQuerySent, setRecipeQuerySent] = useState(false);
@@ -47,7 +49,10 @@ function Home() {
 
     return (
         <div className=' my-5 container' style={{"maxWidth": "70rem"}}>
-            <h1 className='text-center my-3'>Home Page</h1>
+            {/* <h1 >Recipe Bowl</h1> */}
+            <div className='home-landing text-center my-3'>
+                <img src={Landing} alt="The Recipe Bowl logo" />
+            </div>
             <div className='mx-auto search-bar row'>
                 <div className='col-2 mx-auto'>
                     <Dropdown>
@@ -67,7 +72,7 @@ function Home() {
                         value={query}
                         className='form-control'
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder='Search for a recipe or user...'
+                        placeholder={`Search for ${searchType.toLowerCase()}...`}
                     />
                 </div>
                 <div className='col-3 mx-auto'>
@@ -80,33 +85,39 @@ function Home() {
                     <Loading /> :
                     <div>
                         { recipeQuerySent &&
-                            <div className='row g-3'>
-                                {recipeResults.length > 0 ?
-                                    <>
-                                        {recipeResults.map((recipe, index) => {
-                                            return (
-                                                <RecipeCard recipe={recipe} index={index} />
-                                            );
-                                        })}
-                                    </> :
-                                    <p className='text-center my-3' >No results found</p>
-                                }
-                            </div>
+                            <>
+                                <p className='text-center'>{recipeResults.length} result(s) found!</p>
+                                <div className='row g-3'>
+                                    {recipeResults.length > 0 ?
+                                        <>
+                                            {recipeResults.map((recipe, index) => {
+                                                return (
+                                                    <RecipeCard recipe={recipe} index={index} />
+                                                );
+                                            })}
+                                        </> :
+                                        <p className='text-center my-3' >No results found</p>
+                                    }
+                                </div>
+                            </>
                         }
 
                         { userQuerySent &&
-                            <div className='row g-3'>
-                                {accountResults.length > 0 ?
-                                    <>
-                                        {accountResults.map((account, index) => {
-                                            return (
-                                                <ProfileCard account={account} index={index} />
-                                            );
-                                        })}
-                                    </> :
-                                    <p className='text-center my-3' >No results found</p>
-                                }
-                            </div>
+                            <>
+                                <p className='text-center'>{accountResults.length} result(s) found!</p>
+                                <div className='row g-3'>
+                                    {accountResults.length > 0 ?
+                                        <>
+                                            {accountResults.map((account, index) => {
+                                                return (
+                                                    <ProfileCard account={account} index={index} />
+                                                );
+                                            })}
+                                        </> :
+                                        <p className='text-center my-3' >No results found</p>
+                                    }
+                                </div>
+                            </>
 
                         }
                     </div>

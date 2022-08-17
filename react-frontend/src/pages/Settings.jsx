@@ -42,7 +42,7 @@ function Settings() {
         <div >
             { isLoading ? 
                 <Loading /> :
-                <div className='border container-sm my-5' style={{"maxWidth": "50rem"}}>
+                <div className='border container-sm my-5 main-forms'>
                     <h1 className='text-center my-5'>Account Settings</h1>
                     <div className='my-2' >
                         <Nav className='row justify-content-evenly' >

@@ -47,7 +47,7 @@ function ResendEmail() {
     });
 
     return (
-        <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
+        <div className='border container-sm my-5 mini-forms'>
             <h2 className='my-3 text-center' >Resend Email Verification</h2>
             
             {

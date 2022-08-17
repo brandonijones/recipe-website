@@ -1,0 +1,17 @@
+body {
+    background-color: #f7f4f4;
+}
+
+.main-forms {
+    max-width: 50rem;
+    background-color: white;
+}
+
+.mini-forms {
+    max-width: 35rem;
+    background-color: white;
+}
+
+.logo-small {
+    width: 5rem;
+}

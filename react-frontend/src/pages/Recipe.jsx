@@ -117,7 +117,7 @@ function Recipe() {
                                 
                             </div>
                             
-                            <p>posted by <a href={`/profile/${username}`}>{username}</a> on {`${months[postedAt.getMonth()]} ${postedAt.getDate()}, ${postedAt.getFullYear()}`}</p>
+                            <p>by <a href={`/profile/${username}`}>{username}</a> on {`${months[postedAt.getMonth()]} ${postedAt.getDate()}, ${postedAt.getFullYear()}`}</p>
                             <p> {recipe.description} </p>
 
                             <h4>Ingredients</h4>

@@ -155,7 +155,7 @@ function NewPost() {
         <div>
             { isLoading ?
                 <Loading /> :
-                <div className='border container-sm my-5' style={{"maxWidth": "50rem"}}>
+                <div className='border container-sm my-5 main-forms'>
                     <Formik
                         onSubmit={submitForm}
                         initialValues={initialValues}

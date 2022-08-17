@@ -47,7 +47,7 @@ function ForgotPassword() {
     });
     
     return (
-        <div className='border container-sm my-5' style={{"maxWidth": "35rem"}}>
+        <div className='border container-sm my-5 mini-forms'>
             <h2 className='text-center my-3' >Forgot Password</h2>
             {
                 !isSent ? 
