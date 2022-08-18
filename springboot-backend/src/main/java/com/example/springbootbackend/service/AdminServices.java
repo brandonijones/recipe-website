@@ -145,6 +145,11 @@ public class AdminServices {
         }
 
         Recipe recipeToDelete = recipeRepository.findRecipeById(recipeId);
+        try {
+            cloudinaryServices.deleteRecipeImageFromCloudinary(recipeToDelete.getImageURL());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         recipeRepository.delete(recipeToDelete);
 
         response.put("success", "Recipe successfully deleted");
