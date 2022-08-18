@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-@CrossOrigin
+@CrossOrigin(origins = "${app.react-frontend.url}")
 @RestController
 @RequestMapping(value = "/api/v1/account")
 public class AccountController {
