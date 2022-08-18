@@ -27,7 +27,7 @@ public class SpringbootBackendApplication {
 						.allowedOrigins("http://localhost:3000", "https://therecipebowl.netlify.app")
 						.allowedMethods("GET", "POST","PUT", "DELETE")
 						.allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-								"Access-Control-Request-Headers")
+								"Access-Control-Request-Headers", "Access-Control-Allow-Origin")
 						.exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
 						.allowCredentials(false).maxAge(3600);
 			}
@@ -40,7 +40,7 @@ public class SpringbootBackendApplication {
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://therecipebowl.netlify.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST","PUT", "DELETE"));
 		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-				"Access-Control-Request-Headers"));
+				"Access-Control-Request-Headers", "Access-Control-Allow-Origin"));
 		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
