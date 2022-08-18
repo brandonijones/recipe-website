@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const ADMIN_API_BASE_URL = "http://localhost:8080/api/v1/admin";
+const ADMIN_API_BASE_URL = `${process.env.REACT_APP_BACKEND_API_URL}/admin`;
 
 class AdminService {
 

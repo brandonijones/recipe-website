@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dxgfugkbb/image/upload";
+const CLOUDINARY_UPLOAD_URL = process.env.REACT_APP_CLOUDINARY_API_URL;
 
 class CloudinaryService {
 
