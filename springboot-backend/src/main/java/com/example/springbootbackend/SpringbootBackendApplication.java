@@ -18,21 +18,21 @@ public class SpringbootBackendApplication {
 		SpringApplication.run(SpringbootBackendApplication.class, args);
 	}
 
-//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/api/**")
-//						.allowedOrigins("http://localhost:3000", "https://therecipebowl.netlify.app")
-//						.allowedMethods("GET", "POST","PUT", "DELETE")
-//						.allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-//								"Access-Control-Request-Headers", "Access-Control-Allow-Origin")
-//						.exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-//						.allowCredentials(false).maxAge(3600);
-//			}
-//		};
-//	}
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/api/**")
+						.allowedOrigins("*")
+						.allowedMethods("GET", "POST","PUT", "DELETE")
+						.allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
+								"Access-Control-Request-Headers", "Access-Control-Allow-Origin")
+						.exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+						.allowCredentials(false).maxAge(3600);
+			}
+		};
+	}
 
 //	@Bean
 //	public CorsConfigurationSource corsConfigurationSource() {
