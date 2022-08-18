@@ -9,13 +9,10 @@ import com.example.springbootbackend.verification.ResendResponse;
 import com.example.springbootbackend.verification.VerifyResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -34,7 +31,7 @@ public class RegistrationService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailServices emailServices;
 
     private final int TIME_TO_EXPIRE = 15;
 
@@ -64,7 +61,7 @@ public class RegistrationService {
         emailTokenRepository.save(emailToken);
 
         // Send email
-        sendVerificationEmail(account, emailToken);
+        emailServices.sendVerificationEmail(account, emailToken);
     }
 
     public ResendResponse resendEmail(ResendRequest request) {
@@ -104,7 +101,7 @@ public class RegistrationService {
 
         // Send email
         try {
-            sendVerificationEmail(account, emailToken);
+            emailServices.sendVerificationEmail(account, emailToken);
             response.setError(false);
             response.setMessage("New verification email has been sent!");
             response.setEmail(request.getEmail());
@@ -126,30 +123,6 @@ public class RegistrationService {
 
     private String generateVerificationCode() {
         return RandomString.make(64);
-    }
-
-    private void sendVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Activate your account";
-        String senderName = "Recipe Website";
-        String verifyURL = "http://localhost:3000/verify?code=" + emailToken.getCode();
-
-        // Mail content
-        String mailContent = "<p>Dear " + account.getName() + ",</p>";
-        mailContent += "<p>Please click the link below to verify your email and activate your account.</p>";
-        mailContent += "<a href=" + verifyURL + ">VERIFY</a>";
-        mailContent += "<p>This link will expire in 15 minutes.</p>";
-        mailContent += "<p>Thank you, <br> The Recipe Website Team";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        // TODO make custom email for this website
-        helper.setFrom("brandonijones@outlook.com", senderName);
-        helper.setTo(account.getEmail());
-        helper.setSubject(subject);
-        helper.setText(mailContent, true);
-
-        mailSender.send(message);
     }
 
     public VerifyResponse verifyEmail(String verificationCode) {

@@ -11,19 +11,14 @@ import com.example.springbootbackend.repository.ForgotPasswordTokenRepository;
 import com.example.springbootbackend.verification.VerifyResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.cloudinary.*;
 
 @Service
 public class AccountServices {
@@ -44,7 +39,7 @@ public class AccountServices {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailServices emailServices;
 
     @Autowired
     private CloudinaryServices cloudinaryServices;
@@ -159,7 +154,7 @@ public class AccountServices {
 
         // Send email
         try {
-            sendForgotPasswordEmail(account, passwordToken);
+            emailServices.sendForgotPasswordEmail(account, passwordToken);
             response.setError(false);
             response.setMessage("Password reset email has been sent!");
             response.setEmail(request.getEmail());
@@ -173,30 +168,6 @@ public class AccountServices {
         response.setMessage("Email can not be sent at this time.");
         response.setEmail(request.getEmail());
         return response;
-    }
-
-    private void sendForgotPasswordEmail(Account account, ForgotPasswordToken passwordToken) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Reset your password";
-        String senderName = "Recipe Website";
-        String resetURL = "http://localhost:3000/reset-password?code=" + passwordToken.getCode();
-
-        // Mail content
-        String mailContent = "<p>Dear " + account.getName() + ",</p>";
-        mailContent += "<p>Please click the link below to reset your password.</p>";
-        mailContent += "<a href=" + resetURL + ">RESET PASSWORD</a>";
-        mailContent += "<p>This link will expire in 15 minutes.</p>";
-        mailContent += "<p>Thank you, <br> The Recipe Website Team";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        // TODO make custom email for this website
-        helper.setFrom("brandonijones@outlook.com", senderName);
-        helper.setTo(account.getEmail());
-        helper.setSubject(subject);
-        helper.setText(mailContent, true);
-
-        mailSender.send(message);
     }
 
     public VerifyResponse authorizePasswordReset(String verificationCode) {
@@ -387,7 +358,7 @@ public class AccountServices {
 
         // Sending an email notice to previous email
         try {
-            sendEmailChangeNotice(account, newEmail);
+            emailServices.sendEmailChangeNotice(account, newEmail);
         } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
             response.setError(true);
@@ -420,7 +391,7 @@ public class AccountServices {
 
         // Sending verification link to new email address
         try {
-            sendNewVerificationEmail(account, newEmailToken);
+            emailServices.sendNewVerificationEmail(account, newEmailToken);
             response.setError(false);
             response.setMessage("New verification email has been sent!");
             response.setAccessToken(newAccessToken);
@@ -437,53 +408,6 @@ public class AccountServices {
 
     private String generateVerificationCode() {
         return RandomString.make(64);
-    }
-
-    private void sendEmailChangeNotice(Account account, String newEmail) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Your email is being changed";
-        String senderName = "Recipe Website";
-
-        // Mail content
-        String mailContent = "<p>Dear " + account.getUsername() + ",</p>";
-        mailContent += "<p>You have recently requested to update your email to " + newEmail + ".</p>";
-        mailContent += "<p>If this was you, please ignore this email.</p>";
-        mailContent += "<p>If this was not you, please log in to correct the email change or contact us for assistance.</p>";
-        mailContent += "<p>Thank you, <br> The Recipe Website Team";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        // TODO make custom email for this website
-        helper.setFrom("brandonijones@outlook.com", senderName);
-        helper.setTo(account.getEmail());
-        helper.setSubject(subject);
-        helper.setText(mailContent, true);
-
-        mailSender.send(message);
-    }
-
-    private void sendNewVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Verify your new email address";
-        String senderName = "Recipe Website";
-        String resetURL = "http://localhost:3000/verify?changeEmailCode=" + emailToken.getCode();
-
-        // Mail content
-        String mailContent = "<p>Dear " + account.getName() + ",</p>";
-        mailContent += "<p>Please click the link below to verify your new email address</p>";
-        mailContent += "<a href=" + resetURL + ">VERIFY EMAIL</a>";
-        mailContent += "<p>This link will expire in 15 minutes.</p>";
-        mailContent += "<p>Thank you, <br> The Recipe Website Team";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        // TODO make custom email for this website
-        helper.setFrom("brandonijones@outlook.com", senderName);
-        helper.setTo(account.getEmail());
-        helper.setSubject(subject);
-        helper.setText(mailContent, true);
-
-        mailSender.send(message);
     }
 
     public VerifyResponse verifyNewEmail(String code) {
