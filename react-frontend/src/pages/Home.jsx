@@ -49,7 +49,6 @@ function Home() {
 
     return (
         <div className=' my-5 container' style={{"maxWidth": "70rem"}}>
-            {/* <h1 >Recipe Bowl</h1> */}
             <div className='home-landing text-center my-3'>
                 <img src={Landing} alt="The Recipe Bowl logo" />
             </div>

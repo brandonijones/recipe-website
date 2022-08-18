@@ -178,7 +178,7 @@ function Reviews(props) {
                                                 <p className='review-date'>{`${month} ${date}, ${year} ${hours}:${minutes} ${timeOfDay}`} </p>
                                             </div>
                                             <div className='col-sm-1 text-center my-auto delete-review'>
-                                                {authState.id === review.account.id && 
+                                                {(authState.id === review.account.id || authState.role === 'ADMIN') && 
                                                     <FontAwesomeIcon 
                                                         icon={faTrash}
                                                         onClick={() => setShowDeleteModal(true)}

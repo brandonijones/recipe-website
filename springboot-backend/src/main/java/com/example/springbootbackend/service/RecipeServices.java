@@ -1,10 +1,7 @@
 package com.example.springbootbackend.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.example.springbootbackend.auth.RecipeUploadRequest;
 import com.example.springbootbackend.auth.RecipeUploadResponse;
-import com.example.springbootbackend.cloudinary.config.CloudinaryConfig;
 import com.example.springbootbackend.jwt.JwtTokenUtil;
 import com.example.springbootbackend.model.*;
 import com.example.springbootbackend.model.compositekeys.DirectionID;
@@ -43,10 +40,13 @@ public class RecipeServices {
     private TaggedRecipeRepository taggedRecipeRepository;
 
     @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private CloudinaryConfig cloudinaryConfig;
+    private CloudinaryServices cloudinaryServices;
 
     private final String DEFAULT_RECIPE_IMAGE_URL = "https://res.cloudinary.com/dxgfugkbb/image/upload/v1660331856/recipe_website/recipe_images/default_recipe_image.png";
 
@@ -222,7 +222,15 @@ public class RecipeServices {
 
     public Recipe findRecipeById(String recipeId) {
         Long id = Long.parseLong(recipeId);
-        return recipeRepository.findRecipeById(id);
+
+        // Updating the average rating just in case accounts that left reviews were deleted
+        Double averageRating = reviewRepository.getAverageRatingForRecipe(id);
+        Recipe recipe = recipeRepository.findRecipeById(id);
+        recipe.setId(recipe.getId());
+        recipe.setAverageRating(averageRating);
+        recipeRepository.save(recipe);
+
+        return recipe;
     }
 
     public List<Ingredient> findIngredients(String recipeId) {
@@ -265,7 +273,7 @@ public class RecipeServices {
 
         if (!recipe.getImageURL().equals(DEFAULT_RECIPE_IMAGE_URL)) {
             try {
-                deleteRecipeImageFromCloudinary(recipe.getImageURL());
+                cloudinaryServices.deleteRecipeImageFromCloudinary(recipe.getImageURL());
             } catch (IOException e) {
                 e.printStackTrace();
                 return new ResponseEntity<>("Recipe image failed to delete from Cloudinary", HttpStatus.BAD_REQUEST);
@@ -277,26 +285,11 @@ public class RecipeServices {
         return new ResponseEntity<>("Successfully deleted recipe", HttpStatus.OK);
     }
 
-    private void deleteRecipeImageFromCloudinary(String recipeImage) throws IOException {
-
-        // The public id / filename is the last url parameter
-        String[] urlArray = recipeImage.split("/");
-        int lastIndex = urlArray.length - 1;
-        String fileName = urlArray[lastIndex];
-
-        // Separate the public id from the file extension
-        String[] fileArray = fileName.split("\\.");
-        String publicId = "recipe_website/recipe_images/" + fileArray[0];
-
-        Cloudinary cloudinary = cloudinaryConfig.getInstance();
-
-        // Avoids deleting the default profile picture
-        if (!publicId.equals("recipe_website/recipe_images/default_recipe_image")) {
-            cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "image"));
-        }
-    }
-
     public List<Recipe> findRecipesByQuery(String query) {
         return recipeRepository.findRecipesByQuery(query);
+    }
+
+    public List<Recipe> findAllRecipes() {
+        return recipeRepository.findAll();
     }
 }

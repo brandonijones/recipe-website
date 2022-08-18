@@ -53,11 +53,17 @@ function NavigationBar() {
                             <div >
                                 <Link to='/'><FontAwesomeIcon className='home-icon' icon={faHouse} /> </Link>
                             </div>
+
+                            
                             
                             { authState.status && 
                                 <div className='post-border py-1' >
                                     <Link to='/new-post'><FontAwesomeIcon icon={faCirclePlus} /> Post</Link>
                                 </div>  
+                            }
+
+                            { authState.role === 'ADMIN' &&
+                                <Link to='/admin'>ADMIN</Link>
                             }
 
                             <div className='dropdown' onMouseLeave={() => setShow(false)} >

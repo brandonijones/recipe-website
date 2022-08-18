@@ -46,7 +46,7 @@ function Recipe() {
             } else {
                 navigate("404");
             }
-        })
+        });
     }, []);
 
     const checkUsername = (recipeValues) => {

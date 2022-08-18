@@ -1,11 +1,10 @@
 import { React, useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../helpers/AuthContext';
-import AccountService from '../services/AccountService';
+import CloudinaryService from '../services/CloudinaryService';
 import RecipeService from '../services/RecipeService';
 import { useNavigate } from 'react-router';
 import { Formik, Form, Field, FieldArray, getIn } from 'formik';
 import * as Yup from 'yup';
-import axios from "axios";
 
 import Loading from '../components/Loading';
 import CropRecipeImageModal from '../components/crop/CropRecipeImageModal';
@@ -95,7 +94,7 @@ function NewPost() {
             cloudinaryRecipeImageRequest.append("upload_preset", "recipe_website_preset");
             cloudinaryRecipeImageRequest.append("folder", "recipe_website/recipe_images");
 
-            axios.post("https://api.cloudinary.com/v1_1/dxgfugkbb/image/upload", cloudinaryRecipeImageRequest).then((response) => {
+            CloudinaryService.uploadImage(cloudinaryRecipeImageRequest).then((response) => {
                 console.log(response.data);
 
                 const recipeURL = response.data.secure_url;

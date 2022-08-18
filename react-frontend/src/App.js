@@ -6,7 +6,7 @@ import AccountService from './services/AccountService';
 /* Components and Pages */
 import NavigationBar from './components/NavigationBar';
 import Home from './pages/Home';
-import Search from './pages/Search';
+import Admin from './pages/Admin';
 import NewPost from './pages/NewPost';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
@@ -34,6 +34,7 @@ import './styles/newpost.css';
 import './styles/recipe.css';
 import './styles/review.css';
 import './styles/home.css';
+import './styles/admin.css';
 
 function App() {
 
@@ -78,8 +79,8 @@ function App() {
         <Routes>
           <Route path='/' element={<NavigationBar />} >
             <Route index element={<Home />} />
-            <Route path='/search' element={<Search />} />
-            <Route path='/new-post' element={ <NewPost /> } />
+            <Route path='/admin' element={<Admin />} />
+            <Route path='/new-post' element={<NewPost />} />
             <Route path='/login' element={<Login />} />
             <Route path='/profile/:username' element={<Profile />} />
             <Route path='/account/settings' element={<Settings />}>
@@ -90,8 +91,8 @@ function App() {
               <Route path='delete-account' element={<DeleteAccount /> } />
             </Route>
             <Route path='/recipe/:username/:recipeId' element={<Recipe />} />
-            <Route path='/forgot-password' element={ <ForgotPassword /> } />
-            <Route path='/reset-password' element={ <ResetPassword /> } />
+            <Route path='/forgot-password' element={<ForgotPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
             <Route path='/registration' element={<Registration />} />
             <Route path='/registration-success' element={<ConfirmEmail />} />
             <Route path='/resend-email' element={<ResendEmail />} />

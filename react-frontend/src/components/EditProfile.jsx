@@ -2,15 +2,13 @@ import { React, useEffect, useState, useContext } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import AccountService from '../services/AccountService';
-import axios from "axios";
-import Cropper from 'react-easy-crop';
+import CloudinaryService from '../services/CloudinaryService';
 import CropModal from './crop/CropModal';
 import { AuthContext } from '../helpers/AuthContext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
-import Alert from 'react-bootstrap/Alert';
 import Modal from 'react-bootstrap/Modal';
 
 function EditProfile() {
@@ -105,13 +103,14 @@ function EditProfile() {
         console.log(formData);
         console.log(currentUser);
 
-        const cloudinaryRequest = new FormData();
+        const cloudinaryProfileImageRequest = new FormData();
 
         if (selectedFile) {
-            cloudinaryRequest.append("file", selectedFile);
-            cloudinaryRequest.append("upload_preset", "recipe_website_preset");
-            cloudinaryRequest.append("folder", "recipe_website/profile_images");
-            axios.post("https://api.cloudinary.com/v1_1/dxgfugkbb/image/upload", cloudinaryRequest).then((response) => {
+            cloudinaryProfileImageRequest.append("file", selectedFile);
+            cloudinaryProfileImageRequest.append("upload_preset", "recipe_website_preset");
+            cloudinaryProfileImageRequest.append("folder", "recipe_website/profile_images");
+
+            CloudinaryService.uploadImage(cloudinaryProfileImageRequest).then((response) => {
                 console.log(response.data);
                 
                 const newURL = response.data.secure_url;
