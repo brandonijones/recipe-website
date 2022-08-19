@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-@CrossOrigin
 @RestController
 @RequestMapping(value = "/api/v1/account")
 public class AccountController {
@@ -33,12 +32,6 @@ public class AccountController {
 
     @Autowired
     private AccountServices accountServices;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;

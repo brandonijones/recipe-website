@@ -172,7 +172,7 @@ function AccountsTable() {
 
                             return(
                                 <>
-                                    <tr key={index}>
+                                    <tr key={index} >
                                         <td className='text-center'>{account.id}</td>
                                         <td onClick={() => navigate("/profile/" + account.username)} style={{"cursor": "pointer"}} className='text-center'> <img className='admin-account-images' src={account.profilePicture} alt="" /> </td>
                                         <td onClick={() => navigate("/profile/" + account.username)} style={{"cursor": "pointer"}} >{account.username}</td>
