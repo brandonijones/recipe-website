@@ -4,6 +4,7 @@ import com.example.springbootbackend.model.Account;
 import com.example.springbootbackend.model.EmailVerificationToken;
 import com.example.springbootbackend.model.ForgotPasswordToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,15 @@ public class EmailServices {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Value(value = "${app.react-frontend.url}")
+    private String WEBSITE_BASE_URL;
+
     private final String SENDER_EMAIL = "therecipebowl@outlook.com";
     private final String SENDER_NAME = "The Recipe Bowl";
 
     public void sendVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Activate your account";
-        String verifyURL = "http://localhost:3000/verify?code=" + emailToken.getCode();
+        String verifyURL = WEBSITE_BASE_URL + "/verify?code=" + emailToken.getCode();
 
         // Mail content
         String mailContent = "<p>Dear " + account.getName() + ",</p>";
@@ -46,7 +50,7 @@ public class EmailServices {
 
     public void sendForgotPasswordEmail(Account account, ForgotPasswordToken passwordToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Reset your password";
-        String resetURL = "http://localhost:3000/reset-password?code=" + passwordToken.getCode();
+        String resetURL = WEBSITE_BASE_URL + "/reset-password?code=" + passwordToken.getCode();
 
         // Mail content
         String mailContent = "<p>Dear " + account.getName() + ",</p>";
@@ -91,7 +95,7 @@ public class EmailServices {
 
     public void sendNewVerificationEmail(Account account, EmailVerificationToken emailToken) throws MessagingException, UnsupportedEncodingException {
         String subject = "Verify your new email address";
-        String resetURL = "http://localhost:3000/verify?changeEmailCode=" + emailToken.getCode();
+        String resetURL = WEBSITE_BASE_URL + "/verify?changeEmailCode=" + emailToken.getCode();
 
         // Mail content
         String mailContent = "<p>Dear " + account.getName() + ",</p>";
