@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = {"http://localhost:3000", "https://therecipebowl.netlify.app"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://therecipebowl.netlify.app"})
 @RestController
 @RequestMapping(value = "/api/v1/review")
 public class ReviewController {

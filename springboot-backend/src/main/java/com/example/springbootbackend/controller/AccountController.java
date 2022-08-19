@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-//@CrossOrigin(origins = {"http://localhost:3000", "https://therecipebowl.netlify.app"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://therecipebowl.netlify.app"})
 @RestController
 @RequestMapping(value = "/api/v1/account")
 public class AccountController {
