@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "${app.react-frontend.url}")
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/api/v1/search")
 public class SearchController {
