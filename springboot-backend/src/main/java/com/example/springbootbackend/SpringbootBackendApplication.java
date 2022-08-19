@@ -19,12 +19,8 @@ public class SpringbootBackendApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/api/**")
-						.allowedOrigins("http://localhost:3000", "https://therecipebowl.netlify.app")
-						.allowedMethods("GET", "POST","PUT", "DELETE")
-						.allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-								"Access-Control-Request-Headers")
-						.exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-						.allowCredentials(false).maxAge(3600);
+						.allowedOrigins("*").
+						allowedMethods("GET", "POST","PUT", "DELETE");
 			}
 		};
 	}
