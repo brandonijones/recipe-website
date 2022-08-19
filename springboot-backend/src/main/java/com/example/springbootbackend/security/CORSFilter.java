@@ -7,12 +7,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter("/filter-response-header/*")
+@Component
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CORSFilter implements Filter {
@@ -24,8 +23,8 @@ public class CORSFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
-        response.setHeader("Access-Control-Allow-Origin", "https://therecipebowl.netlify.app");
-        response.setHeader("Access-Control-Allow-Methods", "OPTIONS, DELETE, POST, GET, PATCH, PUT");
+        response.setHeader("Access-Control-Allow-Origin", "https://therecipebowl.netlify.app/");
+        response.setHeader("Access-Control-Allow-Methods", "*");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "*");
         //response.setHeader("Access-Control-Expose-Headers","yourCustomHeaderIfExist");

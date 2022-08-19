@@ -2,7 +2,6 @@ package com.example.springbootbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -12,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
-@ServletComponentScan
 @SpringBootApplication
 public class SpringbootBackendApplication {
 
@@ -32,8 +30,6 @@ public class SpringbootBackendApplication {
 								"Access-Control-Request-Headers", "Access-Control-Allow-Origin")
 						.exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
 						.allowCredentials(false).maxAge(3600);
-
-
 			}
 		};
 	}
