@@ -53,7 +53,7 @@ function Home() {
                 <img className='img-fluid' src={Landing} alt="The Recipe Bowl logo" />
             </div>
             <div className='mx-auto search-bar row gx-2 gy-3'>
-                <div className='col-md-2 col-sm-2 col-3 mx-auto'>
+                <div className='col-md-2 col-sm-2 col-12 mx-auto'>
                     <Dropdown>
                         <Dropdown.Toggle variant='secondary'>
                             {searchType}
@@ -65,7 +65,7 @@ function Home() {
                     </Dropdown>
 
                 </div>
-                <div className='col-md-6 col-sm-6 col-9'>
+                <div className='col-md-6 col-sm-6 col-12'>
                     <input 
                         type="text"
                         value={query}

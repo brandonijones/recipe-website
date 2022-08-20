@@ -46,16 +46,16 @@ function Settings() {
                     <h1 className='text-center my-5'>Account Settings</h1>
                     <div className='my-2' >
                         <Nav className='row justify-content-evenly' >
-                            <Nav.Item className='col text-center my-auto'>
+                            <Nav.Item className='col-md-3 col-12 text-center my-3'>
                                 <Link to='/account/settings/edit-profile'>Edit Profile</Link>   
                             </Nav.Item>
-                            <Nav.Item className='col text-center my-auto'>
+                            <Nav.Item className='col-md-3 col-12 text-center my-3'>
                                 <Link to='/account/settings/change-email'>Change Email</Link>
                             </Nav.Item>
-                            <Nav.Item className='col text-center my-auto'>
+                            <Nav.Item className='col-md-3 col-12 text-center my-3'>
                                 <Link to='/account/settings/change-password'>Change Password</Link>
                             </Nav.Item>
-                            <Nav.Item className='col text-center my-auto'>
+                            <Nav.Item className='col-md-3 col-12 text-center my-3'>
                                 <Link to='/account/settings/delete-account'>Delete Account</Link>
                             </Nav.Item>
                         </Nav>
