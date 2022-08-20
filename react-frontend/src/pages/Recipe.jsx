@@ -7,7 +7,7 @@ import { AuthContext } from '../helpers/AuthContext';
 import Reviews from '../components/Reviews';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
 
 import Modal from 'react-bootstrap/Modal';
 import Rating from '@mui/material/Rating';
@@ -97,6 +97,12 @@ function Recipe() {
                 <Loading /> : 
                 <>
                     <div className='my-5 container border full-recipe-card'>
+                        { authState.username === username && 
+                            <div className='mx-4 my-3'>
+                                <p className='text-center' style={{"cursor": "pointer"}} onClick={() => navigate("/edit-recipe/" + recipeId)} >Edit recipe? <FontAwesomeIcon icon={faPen} /></p> 
+                                <hr />
+                            </div>
+                        }
                         <div className='m-4'>
                             <div className='text-center'>
                                 <img className='img-fluid recipe-image' src={recipe.imageURL} alt={recipe.title} />

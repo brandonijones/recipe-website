@@ -288,8 +288,7 @@ function EditProfile() {
                         <div className='my-2 row'>
                             <label className='col-form-label col-sm-2'>Username:</label>
                             <div className='col-sm-10'>
-                                <Field 
-                                    // value={currentUser.username} 
+                                <Field
                                     validate={validateUsername} 
                                     name="username" 
                                     className='form-control' 
@@ -309,7 +308,6 @@ function EditProfile() {
                             <label className='col-form-label col-sm-2'>Bio:</label>
                             <div className='col-sm-10'>
                                 <Field
-                                    // value={currentUser.bio}
                                     as='textarea'
                                     rows={8} 
                                     name='bio' 

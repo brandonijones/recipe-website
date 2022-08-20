@@ -129,7 +129,12 @@ function RecipesTable() {
                                         > 
                                             <img className='admin-recipe-images' src={recipe.imageURL} alt="" />
                                         </td>
-                                        <td>{recipe.title}</td>
+                                        <td 
+                                            onClick={() => navigate("/recipe/" + recipe.account.username + "/" + recipe.id)}
+                                            style={{"cursor": "pointer"}}
+                                        >
+                                            {recipe.title}
+                                        </td>
                                         <td onClick={() => navigate("/profile/" + recipe.account.username)} style={{"cursor": "pointer"}} >{recipe.account.username}</td>
                                         <td>{recipe.description.substring(0, 200) + "..."}</td>
                                         <td>

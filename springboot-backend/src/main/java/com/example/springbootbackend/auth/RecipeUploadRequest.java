@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class RecipeUploadRequest {
 
     private Long accountId;
+    private Long recipeId;
     private String title;
     private String description;
     private String imageURL;
@@ -24,6 +25,14 @@ public class RecipeUploadRequest {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public Long getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
     }
 
     public String getTitle() {

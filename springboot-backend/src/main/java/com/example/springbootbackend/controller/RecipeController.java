@@ -52,6 +52,11 @@ public class RecipeController {
         return recipeServices.findTags(id);
     }
 
+    @PostMapping("/edit-recipe")
+    public ResponseEntity<Map<String, String>> editRecipe(@RequestHeader("authorization") String header, @RequestBody RecipeUploadRequest request) {
+        return recipeServices.editRecipe(header, request);
+    }
+
     @DeleteMapping("/delete-recipe")
     public ResponseEntity<String> deleteRecipe(@RequestHeader("authorization") String header, @RequestBody Map<String, String> recipe) {
         return recipeServices.deleteRecipe(header, recipe.get("id"));

@@ -2,7 +2,7 @@ import { React, useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../helpers/AuthContext';
 import CloudinaryService from '../services/CloudinaryService';
 import RecipeService from '../services/RecipeService';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Formik, Form, Field, FieldArray, getIn } from 'formik';
 import * as Yup from 'yup';
 
@@ -13,40 +13,156 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark, faCircleMinus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
-function NewPost() {
+function EditRecipe() {
 
     const navigate = useNavigate();
     const { authState } = useContext(AuthContext);
+    const { recipeId } = useParams();
+    const [originalRecipe, setOriginalRecipe] = useState({});
+    const [originalIngredients, setOriginalIngredients] = useState([]);
+    const [originalDirections, setOriginalDirections] = useState([]);
+    const [originalTags, setOriginalTags] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCropModal, setShowCropModal] = useState(false);
     const tagExamples = ["breakfast", "lunch", "dinner", "quick", "drink", "holiday", "dessert", "vegan", "healthy"];
-    
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
-
     const [selectedFile, setSelectedFile] = useState(null);
     const [showFileUpload, setShowFileUpload] = useState(false);
     const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
     const DEFAULT_RECIPE_IMAGE_URL = "https://res.cloudinary.com/dxgfugkbb/image/upload/v1660331856/recipe_website/recipe_images/default_recipe_image.png";
     const [imageURL, setImageURL] = useState(DEFAULT_RECIPE_IMAGE_URL);
+    const [initialValues, setInitialValues] = useState({
+        title: "",
+        imageURL: "",
+        description: "",
+        ingredients: [{ item: "" }],
+        directions: [{ description: "" }],
+        tags: [{ name: "" }],
+        file: null
+    })
 
-
-    // User has to be logged in to access this page
     useEffect(() => {
-        console.log("authState status is " + authState.status);
-        console.log("authState id is " + authState.id);
         
-        if (authState.status === 'undefined') {
-            setIsLoading(true);
-        } else {
-            setIsLoading(false);
+        console.log(recipeId)
+        console.log(authState);
+        setIsLoading(true);
+
+        if (authState.status === true) {
+            RecipeService.findRecipeById(recipeId).then((response) => {
+                let recipeValues = response.data;
+                console.log(recipeValues);
+                if (recipeValues) {
+                    setOriginalRecipe(recipeValues);
+                    setImageURL(recipeValues.imageURL);
+                    setInitialValues(previousState => {
+                        return {...previousState, 
+                            title: recipeValues.title,
+                            imageURL: recipeValues.imageURL,
+                            description: recipeValues.description
+                        }
+                    });
+                }
+                if (recipeValues.account.id !== authState.id) {
+                    navigate("*");
+                }
+                setIsLoading(false);
+            });
+
+            RecipeService.findIngredients(recipeId).then((response) => {
+                let ingredients = response.data;
+                setOriginalIngredients(ingredients);
+                setInitialValues(previousState => {
+                    return {...previousState,
+                        ingredients: ingredients
+                    }
+                });
+            });
+
+            RecipeService.findDirections(recipeId).then((response) => {
+                let directions = response.data;
+                setOriginalDirections(directions);
+                setInitialValues(previousState => {
+                    return {...previousState,
+                        directions: directions
+                    }
+                });
+            });
+
+            RecipeService.findTags(recipeId).then((response) => {
+                let tags = response.data;
+                if (tags.length > 0) {
+                    setOriginalTags(tags);
+                    setInitialValues(previousState => {
+                        return {...previousState,
+                            tags: tags
+                        }
+                    });
+                }
+                
+            });
         }
 
         if (authState.status === false) {
-            navigate("/login");
+            navigate("*");
         }
+    }, [authState, navigate, recipeId]);
 
-    }, [authState, navigate]);
+    const saveChanges = (formValues) => {
+        console.log("New recipe uploaded!")
+        console.log(formValues);
+        console.log(selectedFile);
+
+        setIsLoading(true);
+        setShowSuccessModal(false);
+
+        const cloudinaryRecipeImageRequest = new FormData();
+        
+        if (selectedFile) {
+            cloudinaryRecipeImageRequest.append("file", selectedFile);
+            cloudinaryRecipeImageRequest.append("upload_preset", "recipe_website_preset");
+            cloudinaryRecipeImageRequest.append("folder", "recipe_website/recipe_images");
+
+            CloudinaryService.uploadImage(cloudinaryRecipeImageRequest).then((response) => {
+                console.log(response.data);
+
+                const recipeURL = response.data.secure_url;
+                let recipeUploadValues = {...formValues, 
+                    imageURL: recipeURL, 
+                    recipeId: recipeId
+                }
+
+                updateRecipe(recipeUploadValues); 
+            });
+        } else {
+            let recipeUploadValues = {...formValues,
+                imageURL: imageURL,
+                recipeId: recipeId 
+            }
+
+            updateRecipe(recipeUploadValues);   
+        }
+    }
+
+    const updateRecipe = (recipeValues) => {
+
+        RecipeService.editRecipe(recipeValues).then((response) => {
+            setIsLoading(false);
+            cancelRecipeImageUpdate();
+            setShowSuccessModal(true);
+
+            setImageURL(recipeValues.imageURL);
+            setInitialValues({...initialValues,
+                title: recipeValues.title,
+                imageURL: recipeValues.imageURL,
+                description: recipeValues.description,
+                ingredients: recipeValues.ingredients,
+                directions: recipeValues.directions,
+                tags: recipeValues.tags,
+                file: null
+            });
+        })
+    } 
 
     const validationSchema = Yup.object().shape({
         title: Yup.string().max(255, "Too long! Maximum 255 characters.").required("Please give recipe a title."),
@@ -77,65 +193,17 @@ function NewPost() {
             (value) => {
                 return !value || (value && SUPPORTED_FORMATS.includes(value?.type))
             })
-    })
+    });
 
-    const submitForm = (formValues) => {
-        console.log("New recipe uploaded!")
-        console.log(formValues);
-        console.log(selectedFile);
-
-        setIsLoading(true);
-        setShowSuccessModal(false);
-
-        const cloudinaryRecipeImageRequest = new FormData();
-        
-        if (selectedFile) {
-            cloudinaryRecipeImageRequest.append("file", selectedFile);
-            cloudinaryRecipeImageRequest.append("upload_preset", "recipe_website_preset");
-            cloudinaryRecipeImageRequest.append("folder", "recipe_website/recipe_images");
-
-            CloudinaryService.uploadImage(cloudinaryRecipeImageRequest).then((response) => {
-                console.log(response.data);
-
-                const recipeURL = response.data.secure_url;
-                let recipeUploadValues = {...formValues, 
-                    imageURL: recipeURL, 
-                    accountId: authState.id 
-                }
-
-                postRecipe(recipeUploadValues); 
-            });
-        } else {
-            let recipeUploadValues = {...formValues, 
-                imageURL: DEFAULT_RECIPE_IMAGE_URL, 
-                accountId: authState.id 
-            }
-
-            postRecipe(recipeUploadValues);   
-        }
-    }
-
-    const postRecipe = (recipeUploadValues) => {
-
-        RecipeService.postRecipe(recipeUploadValues).then((response) => {
-            setIsLoading(false);
-            cancelRecipeImageUpdate();
-            setShowSuccessModal(true);
-        });
-    }
-
-    const initialValues = {
-        title: "",
-        description: "",
-        ingredients: [{ item: "" }],
-        directions: [{ description: "" }],
-        tags: [{ name: "" }],
-        file: null
+    const resetRecipeImage = () => {
+        setImageURL(DEFAULT_RECIPE_IMAGE_URL);
+        setShowFileUpload(false);
+        setSelectedFile(null);
     }
 
     const cancelRecipeImageUpdate = () => {
         setSelectedFile(null);
-        setImageURL(DEFAULT_RECIPE_IMAGE_URL);
+        setImageURL(originalRecipe.imageURL);
         setShowFileUpload(false);
     }
 
@@ -156,15 +224,15 @@ function NewPost() {
                 <Loading /> :
                 <div className='border container-sm my-5 main-forms'>
                     <Formik
-                        onSubmit={submitForm}
+                        enableReinitialize={true}
+                        onSubmit={saveChanges}
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                     >
                         {({ errors, touched, values, setFieldValue }) => (
                             <Form className='mx-md-5'>
-                                <h3 className='my-3 text-center' >Create a new post</h3>
+                                <h3 className='my-3 text-center' >Edit Recipe</h3>
 
-                                {/* TODO insert file upload */}
                                 { showCropModal ?
                                     <Modal show={showCropModal} backdrop='static' keyboard={false} >
                                         <Modal.Body>
@@ -188,7 +256,7 @@ function NewPost() {
                                 }
                                 
                                 {!showFileUpload ?
-                                    <p className='my-3 edit-pfp-link text-center' onClick={() => setShowFileUpload(true)}>Add image</p> :
+                                    <p className='my-3 edit-pfp-link text-center' onClick={() => setShowFileUpload(true)}>Edit image</p> :
                                     <div className='row my-3'>
                                         <div className='col-10'>
                                             <input 
@@ -211,6 +279,9 @@ function NewPost() {
                                         >
                                             <span className='me-2'>Cancel</span>
                                             <FontAwesomeIcon icon={ faCircleXmark } />
+                                        </div>
+                                        <div className='my-3 text-center' >
+                                            <p className='text-danger remove-pfp-link' onClick={resetRecipeImage}>Remove image</p>
                                         </div>
                                     </div>
                                 }
@@ -395,7 +466,7 @@ function NewPost() {
                     >
                         <Modal.Header closeButton></Modal.Header>
                         <Modal.Body>
-                            <p className='text-center my-auto'>Recipe successfully uploaded!</p> 
+                            <p className='text-center my-auto'>Recipe successfully updated!</p> 
                         </Modal.Body> 
                     </Modal>
 
@@ -414,8 +485,7 @@ function NewPost() {
                 </div>
             }
         </div>
-        
     );
 }
 
-export default NewPost;
+export default EditRecipe;

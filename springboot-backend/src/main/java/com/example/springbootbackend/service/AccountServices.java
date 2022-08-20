@@ -507,7 +507,7 @@ public class AccountServices {
             return response;
         }
 
-        if(accountRepository.findByAccountId(updatedAccount.getId()) == null) {
+        if (accountRepository.findByAccountId(updatedAccount.getId()) == null) {
             response.setError(true);
             response.setMessage("Account could not be found.");
             return response;

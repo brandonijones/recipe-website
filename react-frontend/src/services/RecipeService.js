@@ -35,6 +35,17 @@ class RecipeService {
         return axios.get(`${RECIPE_API_BASE_URL}/tags?id=${recipeId}`);
     }
 
+    editRecipe(recipeValues) {
+        return axios.post(`${RECIPE_API_BASE_URL}/edit-recipe`, 
+            recipeValues,
+            {
+                headers: {
+                    authorization: "bearer " + localStorage.getItem("accessToken")
+                }
+            }
+        )
+    }
+
     deleteRecipe(recipeId) {
         return axios.delete(RECIPE_API_BASE_URL + "/delete-recipe", 
             { 

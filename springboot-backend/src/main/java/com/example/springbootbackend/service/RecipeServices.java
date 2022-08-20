@@ -48,6 +48,15 @@ public class RecipeServices {
     @Autowired
     private CloudinaryServices cloudinaryServices;
 
+    @Autowired
+    private IngredientServices ingredientServices;
+
+    @Autowired
+    private DirectionServices directionServices;
+
+    @Autowired
+    private TagServices tagServices;
+
     private final String DEFAULT_RECIPE_IMAGE_URL = "https://res.cloudinary.com/dxgfugkbb/image/upload/v1660331856/recipe_website/recipe_images/default_recipe_image.png";
 
     public RecipeUploadResponse uploadRecipe(String header, RecipeUploadRequest request) {
@@ -93,131 +102,114 @@ public class RecipeServices {
         newRecipe.setCreatedAt(formattedCreatedAtTime);
         recipeRepository.save(newRecipe);
 
-        // Creating new recipe entity to access
-
+        // Creating new recipe entity to access id
         Recipe recipe = recipeRepository.findRecipeByAccountIdAndTime(accountId, formattedCreatedAtTime);
-        Long recipeId = recipe.getId();
 
         // Saving the ingredients to the database
-        for (int i = 0; i < newRecipeIngredients.size(); i++) {
-            Long ingredientOrder = (long) i;
-            IngredientID ingredientID = new IngredientID(recipeId, ingredientOrder);
-
-            Ingredient ingredient = newRecipeIngredients.get(i);
-            ingredient.setIngredientPK(ingredientID);
-            ingredient.setRecipe(recipe);
-            ingredientRepository.save(ingredient);
-        }
+        ingredientServices.addIngredients(recipe, newRecipeIngredients);
 
         // Saving the directions to the database
-        for (int i = 0; i < newRecipeDirections.size(); i++) {
-            Long directionOrder = (long) i;
-            DirectionID directionID = new DirectionID(recipeId, directionOrder);
-
-            Direction direction = newRecipeDirections.get(i);
-            direction.setDirectionPK(directionID);
-            direction.setRecipe(recipe);
-            directionRepository.save(direction);
-        }
+        directionServices.addDirections(recipe, newRecipeDirections);
 
         // Adding new tags to the database
-        List<Tag> existingTags = tagRepository.findAllTags();
-
-        // Will contain all the tags from the database
-        HashMap<String, Long> existingTagsMap = new HashMap<>();
-
-        // Will contain all the tags for this new recipe
-        HashSet<Long> tagIdSet = new HashSet<>();
-
-        // Adding tags if necessary
-        if (newRecipeTags.size() > 0) {
-
-            // Special checks needed if there are tags in the database
-            if (existingTags.size() > 0) {
-
-                // Adding existing tags to a hash map.
-                for (Tag existingTag : existingTags) {
-                    String name = existingTag.getName().toLowerCase();
-                    Long id = existingTag.getId();
-                    existingTagsMap.put(name, id);
-                }
-
-                // Going through each tag submitting in the form
-                for (Tag newRecipeTag : newRecipeTags) {
-
-
-                    // For convenience, all tags will be lowercase
-                    String formattedTagName = newRecipeTag.getName().toLowerCase();
-                    newRecipeTag.setName(formattedTagName);
-
-                    // Only adding tags to database if they do not exist yet
-                    if (!existingTagsMap.containsKey(formattedTagName)) {
-
-                        // Save the new tag to generate the id
-                        tagRepository.save(newRecipeTag);
-                        Tag newTag = tagRepository.findTagByName(formattedTagName);
-                        Long newTagId = newTag.getId();
-
-                        // Adding new tag to hash map of existing tags in the database
-                        existingTagsMap.put(newTag.getName(), newTagId);
-
-                        // Add new tag id to set of tags for this new recipe
-                        tagIdSet.add(newTagId);
-
-                        // Saving to tagged_recipe table
-                        TaggedRecipeID taggedRecipeID = new TaggedRecipeID(recipeId, newTagId);
-                        TaggedRecipe taggedRecipe = new TaggedRecipe(taggedRecipeID);
-                        taggedRecipe.setRecipe(recipe);
-                        taggedRecipe.setTag(newTag);
-                        taggedRecipeRepository.save(taggedRecipe);
-                    } else {
-                        // update tag
-                        Long existingTagId = existingTagsMap.get(formattedTagName);
-
-                        // Only adding tag to set and database if it is not a duplicate
-                        if (!tagIdSet.contains(existingTagId)) {
-                            tagIdSet.add(existingTagId);
-                            Tag existingTag = tagRepository.findTagById(existingTagId);
-                            TaggedRecipeID taggedRecipeID = new TaggedRecipeID(recipeId, existingTagId);
-                            TaggedRecipe taggedRecipe = new TaggedRecipe(taggedRecipeID);
-                            taggedRecipe.setRecipe(recipe);
-                            taggedRecipe.setTag(existingTag);
-                            taggedRecipeRepository.save(taggedRecipe);
-                        }
-                    }
-                }
-            } else {
-                // This is used to populate the very first tags in the database
-
-                for (Tag newRecipeTag : newRecipeTags) {
-                    // Saving tag to generate id
-                    String formattedTagName = newRecipeTag.getName().toLowerCase();
-                    newRecipeTag.setName(formattedTagName);
-                    tagRepository.save(newRecipeTag);
-
-                    // Save the data (mainly the generated id) to newTag
-                    newRecipeTag = tagRepository.findTagByName(newRecipeTag.getName());
-                    Long tagId = newRecipeTag.getId();
-
-                    TaggedRecipeID taggedRecipeID = new TaggedRecipeID(recipeId, tagId);
-                    TaggedRecipe taggedRecipe = new TaggedRecipe(taggedRecipeID);
-                    taggedRecipe.setRecipe(recipe);
-                    taggedRecipe.setTag(newRecipeTag);
-                    taggedRecipeRepository.save(taggedRecipe);
-                }
-            }
-        }
+        tagServices.addTags(recipe, newRecipeTags);
 
         response.setError(false);
         response.setMessage("Recipe successfully uploaded!");
         return response;
     }
 
+    public ResponseEntity<Map<String, String>> editRecipe(String header, RecipeUploadRequest request) {
+        Map<String, String> response = new HashMap<>();
+
+        String token = header.split(" ")[1];
+        boolean isValid = jwtTokenUtil.validateAccessToken(token);
+
+        if (!isValid) {
+            response.put("error", "JWT is invalid");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        // Original recipe
+        Recipe recipe = recipeRepository.findRecipeById(request.getRecipeId());
+
+        if (recipe == null) {
+            response.put("error", "Recipe not found.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Long recipeId = recipe.getId();
+        String originalTitle = recipe.getTitle();
+        String originalImageURL = recipe.getImageURL();
+        String originalDescription = recipe.getDescription();
+        List<Ingredient> originalIngredients = ingredientRepository.findByRecipeId(recipeId);
+        List<Direction> originalDirections = directionRepository.findByRecipeId(recipeId);
+        List<TaggedRecipe> originalTags = taggedRecipeRepository.findTagsByRecipeId(recipeId);
+
+
+        String updatedTitle = request.getTitle();
+        String updatedImageURL = request.getImageURL();
+        String updatedDescription = request.getDescription();
+        ArrayList<Ingredient> updatedIngredients = request.getIngredients();
+        ArrayList<Direction> updatedDirections = request.getDirections();
+        ArrayList<Tag> updatedTags = request.getTags();
+
+        // Updating title
+        if (!updatedTitle.equals(originalTitle)) {
+            recipe.setTitle(updatedTitle);
+        }
+
+        // Updating image url
+        if (!updatedImageURL.equals(originalImageURL)) {
+            try {
+                cloudinaryServices.deleteRecipeImageFromCloudinary(originalImageURL);
+            } catch (IOException e) {
+                response.put("error", "Could not delete original recipe image");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+
+            recipe.setImageURL(updatedImageURL);
+        }
+
+        // Updating description
+        if (!updatedDescription.equals(originalDescription)) {
+            recipe.setDescription(updatedDescription);
+        }
+
+        // Resetting the ingredients
+        for (Ingredient ingredient : originalIngredients) {
+            ingredientRepository.delete(ingredient);
+        }
+
+        // Adding ingredients
+        ingredientServices.addIngredients(recipe, updatedIngredients);
+
+        // Resetting the directions
+        for (Direction direction : originalDirections) {
+            directionRepository.delete(direction);
+        }
+
+        // Adding directions
+        directionServices.addDirections(recipe, updatedDirections);
+
+        // Resetting the tags
+        for (TaggedRecipe taggedRecipe : originalTags) {
+            taggedRecipeRepository.delete(taggedRecipe);
+        }
+
+        // Updating tags
+        tagServices.addTags(recipe, updatedTags);
+
+        recipe.setId(recipeId);
+        recipeRepository.save(recipe);
+        response.put("success", "Recipe successfully updated.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     public List<Recipe> findRecipesByAccountId(String accountId) {
         Long id = Long.parseLong(accountId);
-        List<Recipe> accountRecipes = recipeRepository.findRecipesByAccountId(id);
 
-        return accountRecipes;
+        return recipeRepository.findRecipesByAccountId(id);
     }
 
     public Recipe findRecipeById(String recipeId) {

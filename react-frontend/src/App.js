@@ -35,6 +35,7 @@ import './styles/recipe.css';
 import './styles/review.css';
 import './styles/home.css';
 import './styles/admin.css';
+import EditRecipe from './pages/EditRecipe';
 
 function App() {
 
@@ -90,6 +91,7 @@ function App() {
               <Route path='change-password' element={<ChangePassword />} />
               <Route path='delete-account' element={<DeleteAccount /> } />
             </Route>
+            <Route path='edit-recipe/:recipeId' element={<EditRecipe />} />
             <Route path='/recipe/:username/:recipeId' element={<Recipe />} />
             <Route path='/forgot-password' element={<ForgotPassword />} />
             <Route path='/reset-password' element={<ResetPassword />} />
