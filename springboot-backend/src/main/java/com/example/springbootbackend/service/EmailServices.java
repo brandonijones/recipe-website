@@ -5,6 +5,7 @@ import com.example.springbootbackend.model.EmailVerificationToken;
 import com.example.springbootbackend.model.ForgotPasswordToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,13 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class EmailServices {
 
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value(value = "${app.react-frontend.url}")
+    @Value(value = "${FRONTEND_URL}")
     private String WEBSITE_BASE_URL;
 
     private final String SENDER_EMAIL = "therecipebowl@outlook.com";
