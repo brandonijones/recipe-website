@@ -65,7 +65,7 @@ function NewPost() {
             Yup.object().shape({
                 name: Yup.string().max(255, "Too long! Maximum 255 characters").required("Please add a tag or remove").matches(/^[A-Za-z0-9_]+$/, "Tag cannot contain special characters or white spaces.")
             })
-        ),
+        ).min(1, "Please provide at least one tag."),
         file: Yup
             .mixed()
             .nullable()
@@ -129,7 +129,7 @@ function NewPost() {
         description: "",
         ingredients: [{ item: "" }],
         directions: [{ description: "" }],
-        tags: [],
+        tags: [{ name: "" }],
         file: null
     }
 
@@ -257,7 +257,7 @@ function NewPost() {
                                                                 <ErrorMessage name={`ingredients.${index}.item`} />
                                                             </div>
                                                             <div className='col-sm-1 my-auto'>
-                                                                { (values.ingredients.length > 1 && index !== 0) && 
+                                                                { (ingredients.length > 1 && index !== 0) && 
                                                                     <FontAwesomeIcon 
                                                                         onClick={() => arrayHelpers.remove(index)} 
                                                                         icon={faCircleMinus}
@@ -303,7 +303,7 @@ function NewPost() {
                                                                 <ErrorMessage name={`directions.${index}.description`} />
                                                             </div>
                                                             <div className='col-sm-1 my-auto'>
-                                                                { (values.directions.length > 1 && index !== 0) && 
+                                                                { (directions.length > 1 && index !== 0) && 
                                                                     <FontAwesomeIcon 
                                                                         onClick={() => arrayHelpers.remove(index)} 
                                                                         icon={faCircleMinus}
@@ -345,11 +345,13 @@ function NewPost() {
                                                                         placeholder={`Ex: ${tagExamples[Math.floor(Math.random() * tagExamples.length)]}`}
                                                                     />
 
-                                                                    <FontAwesomeIcon 
-                                                                        onClick={() => arrayHelpers.remove(index)} 
-                                                                        icon={faCircleMinus}
-                                                                        className='add-minus-button mt-2'
-                                                                    />
+                                                                    { (tags.length > 1 && index !== 0) && 
+                                                                        <FontAwesomeIcon 
+                                                                            onClick={() => arrayHelpers.remove(index)} 
+                                                                            icon={faCircleMinus}
+                                                                            className='add-minus-button mt-2'
+                                                                        />
+                                                                    }
                                                                     
                                                                     <ErrorMessage name={`tags.${index}.name`} />
                                                                 </div>
