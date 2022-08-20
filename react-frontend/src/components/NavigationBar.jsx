@@ -57,9 +57,7 @@ function NavigationBar() {
                             
                             
                             { authState.status && 
-                                <div className='post-border py-1' >
-                                    <Link to='/new-post'><FontAwesomeIcon icon={faCirclePlus} /> Post</Link>
-                                </div>  
+                                <Link to='/new-post'><FontAwesomeIcon className='post-icon' icon={faCirclePlus} /></Link> 
                             }
 
                             { authState.role === 'ADMIN' &&

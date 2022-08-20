@@ -20,10 +20,10 @@ function ProfileInfo(props) {
 
     return (
         <div className='row gx-5' >
-            <div className='col-4 text-center' >
+            <div className='col-md-5 col-12 text-center' >
                 <img className='profile-picture' src={currentProfile.profilePicture} alt={currentProfile.username + "'s profile picture"} />
             </div>
-            <div className='col' >
+            <div className='col-md-7 col-12'>
                 <div className='row d-flex align-items-center mb-3 gy-2' >
                     <div className='col-md-6' >
                         <h2> {currentProfile.name} </h2>    
