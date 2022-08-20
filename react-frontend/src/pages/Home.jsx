@@ -50,10 +50,10 @@ function Home() {
     return (
         <div className=' my-5 container' style={{"maxWidth": "70rem"}}>
             <div className='home-landing text-center my-3'>
-                <img src={Landing} alt="The Recipe Bowl logo" />
+                <img className='img-fluid' src={Landing} alt="The Recipe Bowl logo" />
             </div>
-            <div className='mx-auto search-bar row'>
-                <div className='col-2 mx-auto'>
+            <div className='mx-auto search-bar row gx-2 gy-3'>
+                <div className='col-md-2 col-sm-2 col-3 mx-auto'>
                     <Dropdown>
                         <Dropdown.Toggle variant='secondary'>
                             {searchType}
@@ -65,7 +65,7 @@ function Home() {
                     </Dropdown>
 
                 </div>
-                <div className='col-6 mx-auto'>
+                <div className='col-md-6 col-sm-6 col-9'>
                     <input 
                         type="text"
                         value={query}
@@ -74,7 +74,7 @@ function Home() {
                         placeholder={`Search for ${searchType.toLowerCase()}...`}
                     />
                 </div>
-                <div className='col-3 mx-auto'>
+                <div className='col-md-3 col-sm-3 text-center'>
                     <button className='btn btn-primary' onClick={searchQuery}> <FontAwesomeIcon icon={faSearch} /> Search</button>
                 </div>
             </div>
