@@ -47,6 +47,12 @@ function Home() {
         
     }
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            searchQuery();
+        }
+    }
+
     return (
         <div className=' my-5 container' style={{"maxWidth": "70rem"}}>
             <div className='home-landing text-center my-3'>
@@ -72,6 +78,7 @@ function Home() {
                         className='form-control'
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder={`Search for ${searchType.toLowerCase()}...`}
+                        onKeyDown={handleKeyDown}
                     />
                 </div>
                 <div className='col-md-3 col-sm-3 text-center'>
