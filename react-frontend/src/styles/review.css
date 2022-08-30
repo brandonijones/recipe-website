@@ -1,6 +1,6 @@
 
 /* Overriding a visual issue with star increments */
-.css-dqr9h-MuiRating-label {
+.MuiRating-decimal label {
     display: flex !important;
 }
 
